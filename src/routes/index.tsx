@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import heroStack from "@/assets/hero-stack.jpg";
 import logoAssetOffice from "../assets/logo asset office.png";
@@ -8,6 +8,36 @@ import { AuthModals } from "../components/AuthModals";
 export const Route = createFileRoute("/")({
   component: Index,
 });
+
+function ScrollSection({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+  const ref = useRef<HTMLDivElement | null>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          observer.unobserve(el);
+        }
+      },
+      { threshold: 0.05 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div
+      ref={ref}
+      className={`transition-all duration-1000 transform ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"} ${className}`}
+    >
+      {children}
+    </div>
+  );
+}
 
 function Index() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -21,10 +51,18 @@ function Index() {
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-clip">
       <Nav onOpenAuth={openAuth} />
-      <Hero onOpenAuth={openAuth} />
-      <Philosophy />
-      <ProcessTrust />
-      <ContactFooter />
+      <ScrollSection>
+        <Hero onOpenAuth={openAuth} />
+      </ScrollSection>
+      <ScrollSection>
+        <Philosophy />
+      </ScrollSection>
+      <ScrollSection>
+        <ProcessTrust />
+      </ScrollSection>
+      <ScrollSection>
+        <ContactFooter />
+      </ScrollSection>
       {isAuthModalOpen && (
         <AuthModals
           isOpen={isAuthModalOpen}
@@ -100,20 +138,19 @@ function Hero({ onOpenAuth }: { onOpenAuth: (view: "login" | "signup") => void }
       <div className="grid gap-14 md:grid-cols-12 md:gap-8 items-center">
         <div className="md:col-span-7 relative z-10">
           <span className="chip">
-            <span className="size-1.5 rounded-full bg-coral" /> Boring on purpose since 2019
+            <span className="size-1.5 rounded-full bg-coral" /> Maximum Security. Relentless Growth.
           </span>
           <h1 className="mt-6 font-display text-6xl leading-[0.95] tracking-tight md:text-8xl">
             Crypto wealth,
             <br />
-            <span className="italic text-coral">grown</span> not{" "}
+            <span className="italic text-coral">secured</span> &amp;{" "}
             <span className="relative inline-block">
-              <span className="relative z-10">gambled.</span>
+              <span className="relative z-10">multiplied.</span>
               <span aria-hidden className="absolute inset-x-0 bottom-1 h-4 bg-lime -z-0 -skew-y-1" />
             </span>
           </h1>
           <p className="mt-8 max-w-lg text-lg text-muted-foreground leading-relaxed">
-            The Asset Office builds long-horizon digital asset portfolios for people, families and businesses
-            who'd rather compound quietly than refresh a candlestick chart at 3am.
+            The Asset Office is where smart capital hides. We construct battle-tested, institutional-grade crypto allocations for individuals, families, and businesses who want massive growth under unbreakable security.
           </p>
           <div className="mt-10 flex flex-wrap items-center gap-5">
             {user ? (
@@ -139,9 +176,9 @@ function Hero({ onOpenAuth }: { onOpenAuth: (view: "login" | "signup") => void }
           </div>
 
           <dl className="mt-14 grid grid-cols-3 gap-4 max-w-md">
-            <Stat k="$420M" v="Under advisory" />
-            <Stat k="6.4y" v="Avg holding" />
-            <Stat k="1 200+" v="Households" />
+            <Stat k="$420M" v="Capital Advisory" />
+            <Stat k="6.4y" v="Average Hold" />
+            <Stat k="1,200+" v="Wealth Accounts" />
           </dl>
         </div>
 
@@ -156,10 +193,10 @@ function Hero({ onOpenAuth }: { onOpenAuth: (view: "login" | "signup") => void }
             />
           </div>
           <div className="absolute -top-6 -left-6 rounded-2xl border-2 border-ink bg-cream px-4 py-3 shadow-[6px_6px_0_0_var(--ink)] animate-floaty">
-            <p className="font-display italic text-lg">HODL, refined.</p>
+            <p className="font-display italic text-lg">Unbreakable security.</p>
           </div>
           <div className="absolute -bottom-5 -right-5 rounded-2xl border-2 border-ink bg-lime px-4 py-3 shadow-[6px_6px_0_0_var(--ink)] animate-wobble">
-            <p className="text-xs font-bold uppercase tracking-widest">+ 34% CAGR · 5yr</p>
+            <p className="text-xs font-bold uppercase tracking-widest">relentless compound</p>
           </div>
         </div>
       </div>
@@ -202,29 +239,29 @@ function Philosophy() {
   const cards = [
     {
       n: "01",
-      title: "Time in the market beats timing.",
-      body: "We build allocations for decades, not weeks. Emotions cost more than fees.",
+      title: "Time in the market beats luck.",
+      body: "Allocations built for decades, not weeks. Trading is a casino. Cold-blooded compounding wins every single time.",
       bg: "bg-lime",
       shape: <div className="absolute -right-6 -bottom-6 size-32 rounded-full bg-ink/10" />,
     },
     {
       n: "02",
-      title: "Boring is a feature.",
-      body: "No leverage. No memes. No 100x plays. Just quiet, deliberate compounding.",
+      title: "Boring is highly profitable.",
+      body: "Zero leverage. Zero memes. Zero pump-and-dump noise. Relentless capital growth under lock and key.",
       bg: "bg-blush",
       shape: <div className="absolute -left-8 -top-8 size-32 rotate-12 rounded-3xl bg-coral/40" />,
     },
     {
       n: "03",
-      title: "Custody first, always.",
-      body: "Multi-sig cold storage across three jurisdictions. Your keys, our infrastructure.",
+      title: "Unhackable custody.",
+      body: "Insured multi-signature cold storage across three global jurisdictions. Your keys under absolute protection.",
       bg: "bg-cream border-2 border-ink",
       shape: <div className="absolute -right-4 -top-4 size-24 rounded-2xl bg-cobalt/80" />,
     },
     {
       n: "04",
-      title: "Fees you can explain.",
-      body: "One flat 0.9% a year. No spreads. No performance fees. No fine print.",
+      title: "Flat fee. Zero games.",
+      body: "A simple 0.9% annual fee. No hidden spreads, no performance traps, no fine print. Clean.",
       bg: "bg-coral text-cream",
       shape: <div className="absolute -left-4 -bottom-4 size-28 rounded-full bg-lime" />,
     },
@@ -234,16 +271,15 @@ function Philosophy() {
     <section id="philosophy" className="mx-auto max-w-7xl px-6 py-24 md:py-36">
       <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
         <div className="max-w-2xl">
-          <span className="chip">Why choose The Asset Office</span>
+          <span className="chip">Uncompromising Principles</span>
           <h2 className="mt-6 font-display text-5xl leading-[1.02] tracking-tight md:text-7xl">
-            We're not <span className="italic text-coral">traders.</span>
+            We don't <span className="italic text-coral">trade.</span>
             <br />
-            We're <span className="italic text-cobalt">gardeners.</span>
+            We build <span className="italic text-cobalt">empires.</span>
           </h2>
         </div>
         <p className="max-w-sm text-lg text-muted-foreground">
-          Four convictions that keep us calm when the market isn't. And keep your portfolio
-          growing while you get on with your life.
+          Four brutal convictions that separate us from the panic. Your capital stays safe, stays locked, and grows while the noise fades away.
         </p>
       </div>
 
@@ -277,21 +313,21 @@ function ProcessTrust() {
               <span className="size-1.5 rounded-full bg-lime" /> How it works
             </span>
             <h2 className="mt-6 font-display text-5xl leading-[1.02] tracking-tight md:text-7xl">
-              Four steps. No <span className="italic text-lime">spreadsheets</span>.
+              The Blueprint to <span className="italic text-lime">Multiply</span>.
             </h2>
           </div>
           <p className="max-w-sm text-lg text-cream/70">
-            From your first call to a fully allocated portfolio in about three weeks. Yes, really.
+            From onboarding to secure cold-storage custody and relentless compound in three weeks. Bulletproof setup.
           </p>
         </div>
 
         {/* Steps */}
         <ol className="mt-16 grid gap-4 md:grid-cols-4">
           {[
-            { n: "01", h: "Say hi", b: "A 30-min call to understand goals, timeline and comfort with risk." },
-            { n: "02", h: "Plan", b: "We design an allocation and walk you through every asset and why." },
-            { n: "03", h: "Custody", b: "Your assets move into insured multi-sig cold storage in your name." },
-            { n: "04", h: "Compound", b: "Quarterly reviews, tax-lot reports, and rebalances when needed." },
+            { n: "01", h: "Onboard", b: "A clean 30-minute alignment on how much capital you want to secure and grow." },
+            { n: "02", h: "The Allocation", b: "We design a high-conviction, custom portfolio based on deep protocol security audits." },
+            { n: "03", h: "Fort Knox", b: "Your assets move into insured, multi-sig cold storage vaults under your direct ownership." },
+            { n: "04", h: "relentless compound", b: "Sit back. We optimize tax lots, execute secure rebalances, and watch your capital compound." },
           ].map((s, i) => (
             <li key={s.n} className="relative rounded-3xl border border-cream/15 bg-cream/5 p-6 backdrop-blur">
               <div className="font-mono text-xs font-bold tracking-widest text-lime">STEP {s.n}</div>
@@ -423,11 +459,10 @@ function ContactFooter() {
         <div className="lg:col-span-2">
           <span className="chip">Say hi</span>
           <h2 className="mt-6 font-display text-5xl leading-[1.02] tracking-tight md:text-6xl">
-            Let's build a portfolio that <span className="italic text-coral">outlives</span> the cycle.
+            Build a portfolio that <span className="italic text-coral">outlasts</span> the cycle.
           </h2>
           <p className="mt-6 text-lg text-muted-foreground max-w-md">
-            Tell us a bit about you. A real person (hi, that's Priya, Marcus or Jae) will get
-            back within one business day.
+            Tell us about your capital goals. Let's secure it, compound it, and multiply your wealth with absolute security and institutional precision.
           </p>
         </div>
 
