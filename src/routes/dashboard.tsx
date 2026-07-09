@@ -738,9 +738,11 @@ function ContactEnquiryLoggedIn({
         body: JSON.stringify({ ...form, phone: fullPhone, countryCode: selectedCountry }),
       });
       const data = await response.json();
-      setLoading(false);
 
       if (response.ok) {
+        // Show loading for 3 seconds before displaying success
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+        setLoading(false);
         setStatus({
           type: "success",
           msg: "Thank you! Your enquiry has been received successfully.",
@@ -748,6 +750,7 @@ function ContactEnquiryLoggedIn({
         setForm({ ...form, message: "" });
         setValidationErrors({});
       } else {
+        setLoading(false);
         setStatus({
           type: "error",
           msg: data.error || "An error occurred during submission.",

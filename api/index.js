@@ -268,14 +268,24 @@ app.post("/api/signup", async (req, res) => {
         const text = await response.text();
         console.log(`CRM signup response status ${response.status}: ${text}`);
         console.log(`CRM signup response headers:`, JSON.stringify(Object.fromEntries(response.headers.entries()), null, 2));
+
+        // Only increment count if CRM accepted the lead
+        try {
+          const parsed = JSON.parse(text);
+          if (parsed.lead && !parsed.error) {
+            const currentCount = await getLeadsCount();
+            await setLeadsCount(currentCount + 1);
+            console.log(`✅ Lead accepted by CRM. Count incremented to ${currentCount + 1}`);
+          } else {
+            console.warn(`⚠️ CRM rejected lead: ${parsed.error || "Unknown error"}. Count NOT incremented.`);
+          }
+        } catch (parseErr) {
+          console.error("Failed to parse CRM response:", parseErr);
+        }
       }).catch(err => {
         console.error("External CRM signup forwarding failed:", err);
       });
     }
-
-    // Increment Leads Count on Signup
-    const currentCount = await getLeadsCount();
-    await setLeadsCount(currentCount + 1);
 
     res.status(201).json({ success: true, user: newUser });
   } catch (err) {
@@ -378,17 +388,23 @@ app.post("/api/contact", async (req, res) => {
       const text = await response.text();
       console.log(`CRM response status ${response.status}: ${text}`);
       console.log(`CRM response headers:`, JSON.stringify(Object.fromEntries(response.headers.entries()), null, 2));
+
+      // Only increment count if CRM accepted the lead
+      try {
+        const parsed = JSON.parse(text);
+        if (parsed.lead && !parsed.error) {
+          const current = await getLeadsCount();
+          await setLeadsCount(current + 1);
+          console.log(`✅ Lead accepted by CRM. Count incremented to ${current + 1}`);
+        } else {
+          console.warn(`⚠️ CRM rejected lead: ${parsed.error || "Unknown error"}. Count NOT incremented.`);
+        }
+      } catch (parseErr) {
+        console.error("Failed to parse CRM response:", parseErr);
+      }
     }).catch(err => {
       console.error("External CRM forwarding failed:", err);
     });
-  }
-
-  // Increment count on contact form success
-  try {
-    const current = await getLeadsCount();
-    await setLeadsCount(current + 1);
-  } catch (err) {
-    console.warn("Could not increment leads count in contact endpoint:", err.message);
   }
 
   res.json({ success: true, enquiry: newEnquiry });

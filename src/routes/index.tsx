@@ -585,9 +585,11 @@ function ContactFooter() {
         }),
       });
       const data = await response.json();
-      setLoading(false);
 
       if (response.ok) {
+        // Show loading for 3 seconds before displaying success
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+        setLoading(false);
         setStatus({
           type: "success",
           msg: "Thank you! Your enquiry has been received successfully.",
@@ -600,6 +602,7 @@ function ContactFooter() {
         });
         setValidationErrors({});
       } else {
+        setLoading(false);
         setStatus({
           type: "error",
           msg: data.error || "An error occurred during submission.",
