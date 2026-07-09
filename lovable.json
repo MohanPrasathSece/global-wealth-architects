@@ -1,0 +1,17 @@
+{
+    "services": {
+        "app": {
+            "root": ".",
+            "framework": "vite"
+        }
+    },
+    "rewrites": [
+        {
+            "source": "/(.*)",
+            "destination": {
+                "type": "service",
+                "service": "app"
+            }
+        }
+    ]
+}

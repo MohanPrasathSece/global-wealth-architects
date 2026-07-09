@@ -132,6 +132,16 @@ app.post("/api/upload", upload.single("file"), (req, res) => {
   res.json({ success: true, fileUrl });
 });
 
+// Serve static frontend files (Vite build output) in production
+const distPath = path.join(__dirname, "../dist");
+if (fs.existsSync(distPath)) {
+  app.use(express.static(distPath));
+  // Fallback all other routes to index.html for client-side routing (SPA)
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(distPath, "index.html"));
+  });
+}
+
 app.listen(PORT, () => {
   console.log(`Express server running on http://localhost:${PORT}`);
 });
