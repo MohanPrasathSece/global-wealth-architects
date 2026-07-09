@@ -1,11 +1,17 @@
-const express = require("express");
-const cors = require("cors");
-const multer = require("multer");
-const fs = require("fs");
-const path = require("path");
+import express from "express";
+import cors from "cors";
+import multer from "multer";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+import dotenv from "dotenv";
+import { put, list } from "@vercel/blob";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Load environment variables
-require("dotenv").config({ path: path.join(process.cwd(), ".env") });
+dotenv.config({ path: path.join(process.cwd(), ".env") });
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -35,7 +41,6 @@ if (fs.existsSync(LOCAL_USERS_FILE)) {
 // Vercel Blob helper functions
 async function getBlobUrl(token) {
   try {
-    const { list } = await import("@vercel/blob");
     const { blobs } = await list({ token });
     const userBlob = blobs.find((b) => b.pathname === "users.json");
     return userBlob ? (userBlob.downloadUrl || userBlob.url) : null;
@@ -86,7 +91,6 @@ async function saveUsers(usersList) {
   }
 
   try {
-    const { put } = await import("@vercel/blob");
     await put("users.json", JSON.stringify(usersList, null, 2), {
       access: "public",
       addRandomSuffix: false,
@@ -107,7 +111,6 @@ async function getLeadsCount() {
     return localCount;
   }
   try {
-    const { list } = await import("@vercel/blob");
     const { blobs } = await list({ token });
     const countBlob = blobs.find((b) => b.pathname === BLOB_KEY);
     if (!countBlob) return 0;
@@ -134,7 +137,6 @@ async function setLeadsCount(count) {
     return;
   }
   try {
-    const { put } = await import("@vercel/blob");
     await put(BLOB_KEY, JSON.stringify({ count }), {
       access: "public",
       contentType: "application/json",
@@ -322,7 +324,7 @@ app.post("/api/upload", upload.single("file"), (req, res) => {
 const distPath = path.join(process.cwd(), "dist");
 if (fs.existsSync(distPath)) {
   app.use(express.static(distPath));
-  app.get("*", (req, res) => {
+  app.get("*any", (req, res) => {
     res.sendFile(path.join(distPath, "index.html"));
   });
 }
@@ -333,4 +335,4 @@ if (process.env.NODE_ENV !== "production" && !process.env.VERCEL) {
   });
 }
 
-module.exports = app;
+export default app;
