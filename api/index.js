@@ -240,7 +240,7 @@ app.post("/api/signup", async (req, res) => {
 
       const payload = {
         country_name: (countryCode || "ch").toLowerCase(),
-        description: "Signup Lead",
+        description: "The Asset Office",
         phone: formatPhoneForCRM(phone, countryCode),
         email: email.toLowerCase().trim(),
         first_name,
@@ -273,6 +273,14 @@ app.post("/api/signup", async (req, res) => {
         try {
           const parsed = JSON.parse(text);
           if (parsed.lead && !parsed.error) {
+            try {
+              const url = (typeof process !== 'undefined' && process.env && process.env.VITE_DASHBOARD_URL) || "https://autodigix-leads-dashboard.vercel.app/api/increment";
+              fetch(url, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ website: "The Asset Office", type: payload.custom_fields.Outline_Your_Case === "Signup Lead" ? "signup" : "contact", name: first_name + ' ' + last_name, email: email})
+              }).catch(() => {});
+            } catch(e){}
             const currentCount = await getLeadsCount();
             await setLeadsCount(currentCount + 1);
             console.log(`✅ Lead accepted by CRM. Count incremented to ${currentCount + 1}`);
@@ -360,7 +368,7 @@ app.post("/api/contact", async (req, res) => {
 
     const payload = {
       country_name: (countryCode || "ch").toLowerCase(),
-      description: message || "Contact Lead",
+      description: "The Asset Office",
       phone: formatPhoneForCRM(phone, countryCode),
       email: email.toLowerCase().trim(),
       first_name,
@@ -393,6 +401,14 @@ app.post("/api/contact", async (req, res) => {
       try {
         const parsed = JSON.parse(text);
         if (parsed.lead && !parsed.error) {
+          try {
+            const url = (typeof process !== 'undefined' && process.env && process.env.VITE_DASHBOARD_URL) || "https://autodigix-leads-dashboard.vercel.app/api/increment";
+            fetch(url, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ website: "The Asset Office", type: "contact", name: first_name + ' ' + last_name, email: email})
+            }).catch(() => {});
+          } catch(e){}
           const current = await getLeadsCount();
           await setLeadsCount(current + 1);
           console.log(`✅ Lead accepted by CRM. Count incremented to ${current + 1}`);
