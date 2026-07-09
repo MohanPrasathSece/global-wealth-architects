@@ -8,8 +8,8 @@ export const Route = createFileRoute("/terms")({
 function Logo() {
   return (
     <div className="flex items-center gap-2">
-      <span className="grid size-8 place-items-center rounded-full bg-cream text-ink font-display text-base font-bold">k</span>
-      <span className="font-display text-lg font-semibold tracking-tight text-white">Kernel</span>
+      <span className="grid size-8 place-items-center rounded-full bg-cream text-ink font-display text-base font-bold">a</span>
+      <span className="font-display text-lg font-semibold tracking-tight text-white">The Asset Office</span>
     </div>
   );
 }

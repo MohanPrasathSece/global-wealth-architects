@@ -27,8 +27,8 @@ export const Route = createFileRoute("/dashboard")({
 function Logo() {
   return (
     <div className="flex items-center gap-2">
-      <span className="grid size-8 place-items-center rounded-full bg-cream text-ink font-display text-base font-bold border-2 border-ink shadow-[2px_2px_0_0_var(--ink)]">k</span>
-      <span className="font-display text-lg font-semibold tracking-tight text-ink">Kernel</span>
+      <span className="grid size-8 place-items-center rounded-full bg-cream text-ink font-display text-base font-bold border-2 border-ink shadow-[2px_2px_0_0_var(--ink)]">a</span>
+      <span className="font-display text-lg font-semibold tracking-tight text-ink">The Asset Office</span>
     </div>
   );
 }
@@ -142,7 +142,7 @@ function Dashboard() {
                 How We <span className="italic text-coral">Grow Your Capital</span>
               </h2>
               <p className="text-ink/70 leading-relaxed">
-                We believe in simple, transparent wealth generation. Instead of speculative trading, Kernel allocates your assets into verified node networks and liquidity pools that compound consistent returns.
+                We believe in simple, transparent wealth generation. Instead of speculative trading, The Asset Office allocates your assets into verified node networks and liquidity pools that compound consistent returns.
               </p>
               <div className="space-y-4">
                 {[
@@ -246,7 +246,7 @@ function Dashboard() {
                 Live Yield <span className="italic text-cobalt">Tracking</span>
               </h2>
               <p className="text-ink/70 leading-relaxed">
-                Watch rewards accrue in real time. Kernel’s proprietary yield streams display automated compounding events, REST yields, and arbitrage captures across decentralized markets as they happen.
+                Watch rewards accrue in real time. The Asset Office's proprietary yield streams display automated compounding events, REST yields, and arbitrage captures across decentralized markets as they happen.
               </p>
             </div>
           </div>
@@ -280,7 +280,7 @@ function Dashboard() {
           <div className="flex items-center gap-2">
             <Logo />
             <span className="text-xs text-ink/50 ml-2 font-mono">
-              &copy; 2026 &middot; Kernel Capital. The Future of Digital Wealth
+              &copy; 2026 &middot; The Asset Office. The Future of Digital Wealth
             </span>
           </div>
           <div className="flex items-center gap-6 text-sm text-ink/70">

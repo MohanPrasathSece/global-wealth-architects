@@ -40,8 +40,8 @@ function Nav({ onOpenAuth }: { onOpenAuth: (view: "login" | "signup") => void })
   return (
     <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-6">
       <a href="#" className="flex items-center gap-2">
-        <span className="grid size-9 place-items-center rounded-full bg-ink text-cream font-display text-lg font-bold">k</span>
-        <span className="font-display text-2xl font-semibold tracking-tight">Kernel</span>
+        <span className="grid size-9 place-items-center rounded-full bg-ink text-cream font-display text-lg font-bold">a</span>
+        <span className="font-display text-2xl font-semibold tracking-tight">The Asset Office</span>
       </a>
       <div className="hidden items-center gap-8 md:flex text-sm font-medium">
         <a href="#philosophy" className="hover:text-coral transition-colors">How we think</a>
@@ -109,7 +109,7 @@ function Hero({ onOpenAuth }: { onOpenAuth: (view: "login" | "signup") => void }
             </span>
           </h1>
           <p className="mt-8 max-w-lg text-lg text-muted-foreground leading-relaxed">
-            Kernel builds long-horizon digital asset portfolios for people, families and businesses
+            The Asset Office builds long-horizon digital asset portfolios for people, families and businesses
             who'd rather compound quietly than refresh a candlestick chart at 3am.
           </p>
           <div className="mt-10 flex flex-wrap items-center gap-5">
@@ -231,7 +231,7 @@ function Philosophy() {
     <section id="philosophy" className="mx-auto max-w-7xl px-6 py-24 md:py-36">
       <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
         <div className="max-w-2xl">
-          <span className="chip">Why choose Kernel</span>
+          <span className="chip">Why choose The Asset Office</span>
           <h2 className="mt-6 font-display text-5xl leading-[1.02] tracking-tight md:text-7xl">
             We're not <span className="italic text-coral">traders.</span>
             <br />
@@ -306,7 +306,7 @@ function ProcessTrust() {
           <blockquote className="lg:col-span-3 rounded-[2rem] bg-lime text-ink p-10 md:p-14 relative overflow-hidden">
             <div className="absolute -right-10 -top-10 size-40 rounded-full bg-coral/60" />
             <p className="relative font-display text-3xl leading-tight md:text-4xl">
-              "I'd looked at six 'wealth' platforms. Kernel is the only one that talked me{" "}
+              "I'd looked at six 'wealth' platforms. The Asset Office is the only one that talked me{" "}
               <span className="italic">out</span> of trades. My portfolio is up 3× and I sleep
               through the night."
             </p>
@@ -428,7 +428,7 @@ function ContactFooter() {
           </p>
 
           <div className="mt-10 space-y-4 text-sm">
-            <Row label="Email" value="hello@kernel.money" />
+            <Row label="Email" value="hello@theassetoffice.com" />
             <Row label="Phone" value="+1 (415) 555 0102" />
             <Row label="Offices" value="San Francisco · Lisbon · Singapore" />
           </div>
@@ -503,11 +503,11 @@ function ContactFooter() {
       {/* Big wordmark */}
       <div className="mt-28 border-t-2 border-ink pt-12">
         <div className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
-          <p className="font-display text-[18vw] leading-none tracking-tighter md:text-[14rem]">
-            kernel<span className="text-coral">.</span>
+          <p className="font-display text-[15vw] leading-none tracking-tighter md:text-[10rem]">
+            asset office<span className="text-coral">.</span>
           </p>
           <div className="text-right text-xs uppercase tracking-widest text-muted-foreground space-y-1">
-            <p>© 2026 Kernel Capital, PBC</p>
+            <p>© 2026 The Asset Office, PBC</p>
             <p>SEC registered investment advisor</p>
             <p>Made with patience in California</p>
           </div>

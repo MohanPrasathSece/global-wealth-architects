@@ -239,7 +239,7 @@ export const AuthModals: React.FC<AuthModalsProps> = ({
             /* ════════════════ SIGNUP ════════════════ */
             <div>
               <h3 className="font-display text-3xl font-bold text-ink mb-1">Create Account</h3>
-              <p className="text-sm text-ink/65 mb-6">Join Kernel Capital and start compounding.</p>
+              <p className="text-sm text-ink/65 mb-6">Join The Asset Office and start compounding.</p>
 
               <form onSubmit={handleSignupSubmit} className="space-y-3.5 sm:space-y-4">
 

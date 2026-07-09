@@ -1,5 +1,5 @@
 {
-  "name": "zyvora-kernel-backend",
+  "name": "the-asset-office-backend",
   "version": "1.0.0",
   "description": "Express backend server for auth, CRM, and blob storage file uploads",
   "main": "server.js",
