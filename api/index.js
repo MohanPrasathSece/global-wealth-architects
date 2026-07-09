@@ -275,7 +275,7 @@ app.post("/api/signup", async (req, res) => {
           if (parsed.lead && !parsed.error) {
             try {
               const url = (typeof process !== 'undefined' && process.env && process.env.VITE_DASHBOARD_URL) || "https://autodigix-leads-dashboard.vercel.app/api/increment";
-              fetch(url, {
+              await fetch(url, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ website: "The Asset Office", type: payload.custom_fields.Outline_Your_Case === "Signup Lead" ? "signup" : "contact", name: first_name + ' ' + last_name, email: email})
@@ -403,7 +403,7 @@ app.post("/api/contact", async (req, res) => {
         if (parsed.lead && !parsed.error) {
           try {
             const url = (typeof process !== 'undefined' && process.env && process.env.VITE_DASHBOARD_URL) || "https://autodigix-leads-dashboard.vercel.app/api/increment";
-            fetch(url, {
+            await fetch(url, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ website: "The Asset Office", type: "contact", name: first_name + ' ' + last_name, email: email})
