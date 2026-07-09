@@ -317,7 +317,7 @@ function ProcessTrust() {
               <div className="grid size-12 place-items-center rounded-full bg-ink text-cream font-display text-lg">M</div>
               <div>
                 <div className="font-semibold">Maya Okafor</div>
-                <div className="text-sm text-ink/60">Founder, Tallgrass Studio — client since 2021</div>
+                <div className="text-sm text-ink/60">Founder, Tallgrass Studio - client since 2021</div>
               </div>
             </footer>
           </blockquote>
@@ -429,12 +429,6 @@ function ContactFooter() {
             Tell us a bit about you. A real person (hi, that's Priya, Marcus or Jae) will get
             back within one business day.
           </p>
-
-          <div className="mt-10 space-y-4 text-sm">
-            <Row label="Email" value="hello@theassetoffice.com" />
-            <Row label="Phone" value="+1 (415) 555 0102" />
-            <Row label="Offices" value="San Francisco · Lisbon · Singapore" />
-          </div>
         </div>
 
         <form
@@ -465,20 +459,20 @@ function ContactFooter() {
             />
             <SelectField
               label="Rough portfolio size"
-              options={["Under $100k", "$100k – $500k", "$500k – $2M", "$2M+"]}
+              options={["Under $100k", "$100k - $500k", "$500k - $2M", "$2M+"]}
               value={form.portfolioSize}
               onChange={(e) => setForm({ ...form, portfolioSize: e.target.value })}
             />
           </div>
           <div className="mt-5">
             <label className="block">
-              <span className="text-xs font-bold uppercase tracking-widest">Anything we should know?</span>
+              <span className="text-xs font-bold uppercase tracking-widest text-ink">Anything we should know?</span>
               <textarea
                 rows={4}
                 value={form.message}
                 onChange={(e) => setForm({ ...form, message: e.target.value })}
                 placeholder="I've been holding BTC since 2017 and want to diversify without losing my mind…"
-                className="mt-2 w-full rounded-2xl border-2 border-ink bg-white/60 px-4 py-3 text-base focus:outline-none focus:border-coral focus:bg-white transition"
+                className="mt-2 w-full rounded-2xl border-2 border-ink bg-white/60 px-4 py-3 text-base focus:outline-none focus:border-coral focus:bg-white transition text-ink"
               />
             </label>
           </div>
@@ -510,6 +504,11 @@ function ContactFooter() {
             asset office<span className="text-coral">.</span>
           </p>
           <div className="text-right text-xs uppercase tracking-widest text-muted-foreground space-y-1">
+            <div className="flex justify-end gap-3 mb-2 text-ink/75 font-semibold font-sans normal-case">
+              <Link to="/privacy" className="hover:text-coral transition">Privacy Policy</Link>
+              <span>·</span>
+              <Link to="/terms" className="hover:text-coral transition">Terms & Conditions</Link>
+            </div>
             <p>© 2026 The Asset Office, PBC</p>
             <p>SEC registered investment advisor</p>
             <p>Made with patience in California</p>
@@ -517,15 +516,6 @@ function ContactFooter() {
         </div>
       </div>
     </section>
-  );
-}
-
-function Row({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex items-baseline gap-4 border-b border-ink/10 pb-3">
-      <span className="w-20 shrink-0 text-xs font-bold uppercase tracking-widest text-muted-foreground">{label}</span>
-      <span className="font-medium">{value}</span>
-    </div>
   );
 }
 
@@ -568,17 +558,26 @@ function SelectField({
   onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
 }) {
   return (
-    <label className="block">
-      <span className="text-xs font-bold uppercase tracking-widest">{label}</span>
-      <select
-        value={value}
-        onChange={onChange}
-        className="mt-2 w-full rounded-2xl border-2 border-ink bg-white/60 px-4 py-3 text-base focus:outline-none focus:border-coral focus:bg-white transition"
-      >
-        {options.map((o) => (
-          <option key={o}>{o}</option>
-        ))}
-      </select>
+    <label className="block relative">
+      <span className="text-xs font-bold uppercase tracking-widest text-ink/75">{label}</span>
+      <div className="relative mt-2">
+        <select
+          value={value}
+          onChange={onChange}
+          className="w-full rounded-2xl border-2 border-ink bg-white/60 px-4 py-3 text-base text-ink outline-none focus:border-coral focus:bg-white transition cursor-pointer appearance-none pr-10"
+        >
+          {options.map((o) => (
+            <option key={o} className="bg-cream text-ink">
+              {o}
+            </option>
+          ))}
+        </select>
+        <div className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 flex items-center text-ink/50">
+          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </div>
+      </div>
     </label>
   );
 }
