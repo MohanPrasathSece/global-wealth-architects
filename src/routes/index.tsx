@@ -84,8 +84,8 @@ function Nav({ onOpenAuth }: { onOpenAuth: (view: "login" | "signup") => void })
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <header className="relative w-full z-50 px-4">
-      <nav className="mx-auto mt-4 flex max-w-7xl items-center justify-between rounded-full border-2 border-ink bg-cream px-6 py-3 shadow-[4px_4px_0_0_var(--ink)]">
+    <header className="relative w-full z-50 px-4 md:px-0">
+      <nav className="mx-auto flex max-w-7xl items-center justify-between rounded-full md:rounded-none border-2 md:border-0 border-ink bg-cream md:bg-transparent px-6 py-3 shadow-[4px_4px_0_0_var(--ink)] md:shadow-none mt-4 md:mt-0 md:py-5 md:px-8 md:border-b md:border-ink/10">
         <a href="#" className="flex items-center gap-2">
           <img src={logoAssetOffice} alt="The Asset Office Logo" className="h-7 w-auto object-contain" />
           <span className="font-display text-lg font-semibold tracking-tight text-ink">The Asset Office</span>
