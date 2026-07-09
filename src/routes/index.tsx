@@ -391,7 +391,7 @@ function Philosophy() {
       n: "04",
       title: "Flat fee. Zero games.",
       body: "A simple 0.9% annual fee. No hidden spreads, no performance traps, no fine print. Clean.",
-      bg: "bg-coral text-cream",
+      bg: "bg-coral text-ink",
       shape: <div className="absolute -left-4 -bottom-4 size-28 rounded-full bg-lime" />,
     },
   ];
@@ -422,7 +422,7 @@ function Philosophy() {
             <div className="relative z-10 font-mono text-sm font-bold tracking-widest">{c.n}</div>
             <div className="relative z-10 mt-8">
               <h3 className="font-display text-2xl font-semibold leading-tight">{c.title}</h3>
-              <p className={`mt-3 text-sm leading-relaxed ${c.bg.includes("coral") ? "text-cream/85" : "text-ink/70"}`}>{c.body}</p>
+              <p className={`mt-3 text-sm leading-relaxed ${c.bg.includes("text-cream") ? "text-cream/85" : "text-ink/75"}`}>{c.body}</p>
             </div>
           </article>
         ))}
@@ -624,11 +624,12 @@ function ContactFooter() {
           </p>
         </div>
 
-        <form
-          className="lg:col-span-3 rounded-[2rem] sm:rounded-[2.5rem] border-2 border-ink bg-cream p-5 sm:p-8 md:p-10 shadow-[6px_6px_0_0_var(--ink)] sm:shadow-[10px_10px_0_0_var(--ink)]"
-          onSubmit={handleSubmit}
-        >
-          <div className="grid gap-5 sm:grid-cols-2">
+        <div className="lg:col-span-3 w-full">
+          <form
+            className="rounded-3xl sm:rounded-[2.5rem] border-2 border-ink bg-cream p-4 sm:p-8 md:p-10 shadow-[4px_4px_0_0_var(--ink)] sm:shadow-[10px_10px_0_0_var(--ink)] relative"
+            onSubmit={handleSubmit}
+          >
+          <div className="grid gap-4 sm:gap-5 sm:grid-cols-2">
             <div>
               <label className="mb-2 block text-xs font-bold uppercase tracking-widest text-ink/75">
                 Your Name
@@ -640,7 +641,7 @@ function ContactFooter() {
                   setForm({ ...form, name: e.target.value });
                   setValidationErrors((prev) => ({ ...prev, name: validateName(e.target.value) }));
                 }}
-                className={`w-full rounded-2xl border-2 border-ink bg-white/60 px-4 py-3 outline-none focus:border-coral focus:bg-white transition text-ink text-base ${validationErrors.name ? "border-coral bg-coral/5" : ""}`}
+                className={`w-full rounded-xl sm:rounded-2xl border-2 border-ink bg-white/60 px-3 py-2.5 sm:px-4 sm:py-3 outline-none focus:border-coral focus:bg-white transition text-ink text-sm sm:text-base ${validationErrors.name ? "border-coral bg-coral/5" : ""}`}
                 placeholder="Priya Shah"
               />
               {validationErrors.name && (
@@ -659,7 +660,7 @@ function ContactFooter() {
                   setForm({ ...form, email: e.target.value });
                   setValidationErrors((prev) => ({ ...prev, email: validateEmail(e.target.value) }));
                 }}
-                className={`w-full rounded-2xl border-2 border-ink bg-white/60 px-4 py-3 outline-none focus:border-coral focus:bg-white transition text-ink text-base ${validationErrors.email ? "border-coral bg-coral/5" : ""}`}
+                className={`w-full rounded-xl sm:rounded-2xl border-2 border-ink bg-white/60 px-3 py-2.5 sm:px-4 sm:py-3 outline-none focus:border-coral focus:bg-white transition text-ink text-sm sm:text-base ${validationErrors.email ? "border-coral bg-coral/5" : ""}`}
                 placeholder="you@work.com"
               />
               {validationErrors.email && (
@@ -679,6 +680,7 @@ function ContactFooter() {
                   setSelectedCountry(newCountry);
                   setValidationErrors((prev) => ({ ...prev, phone: validatePhone(form.phone, newCountry) }));
                 }}
+                className="shrink-0"
               />
               <input
                 type="text"
@@ -688,7 +690,7 @@ function ContactFooter() {
                   setValidationErrors((prev) => ({ ...prev, phone: validatePhone(e.target.value, selectedCountry) }));
                 }}
                 placeholder={getCountry(selectedCountry).placeholder}
-                className={`flex-1 rounded-2xl border-2 border-ink bg-white/60 px-4 py-3 outline-none focus:border-coral focus:bg-white transition text-ink text-base ${validationErrors.phone ? "border-coral bg-coral/5" : ""}`}
+                className={`flex-1 min-w-0 rounded-xl sm:rounded-2xl border-2 border-ink bg-white/60 px-3 py-2.5 sm:px-4 sm:py-3 outline-none focus:border-coral focus:bg-white transition text-ink text-sm sm:text-base ${validationErrors.phone ? "border-coral bg-coral/5" : ""}`}
               />
             </div>
             {validationErrors.phone && (
@@ -704,7 +706,7 @@ function ContactFooter() {
                 value={form.message}
                 onChange={(e) => setForm({ ...form, message: e.target.value })}
                 placeholder="I've been holding BTC since 2017 and want to diversify without losing my mind…"
-                className="mt-2 w-full rounded-2xl border-2 border-ink bg-white/60 px-4 py-3 text-base focus:outline-none focus:border-coral focus:bg-white transition text-ink"
+                className="mt-2 w-full rounded-xl sm:rounded-2xl border-2 border-ink bg-white/60 px-3 py-2.5 sm:px-4 sm:py-3 text-sm sm:text-base focus:outline-none focus:border-coral focus:bg-white transition text-ink"
               />
             </label>
           </div>
@@ -718,27 +720,28 @@ function ContactFooter() {
           <button
             type="submit"
             disabled={loading}
-            className="mt-8 inline-flex items-center gap-3 rounded-full bg-ink px-8 py-4 text-base font-semibold text-cream hover:bg-coral transition-colors group cursor-pointer"
+            className="group mt-6 sm:mt-8 inline-flex h-12 sm:h-14 w-full sm:w-auto items-center justify-center gap-2 sm:gap-3 rounded-full bg-ink px-6 sm:px-8 text-sm sm:text-base font-bold text-cream transition hover:bg-ink/90 disabled:opacity-70 shadow-[3px_3px_0_0_var(--lime)] sm:shadow-[4px_4px_0_0_var(--lime)]"
           >
             {loading ? "Sending..." : "Send it over"}
-            <span className="grid size-7 place-items-center rounded-full bg-lime text-ink transition-transform group-hover:rotate-45">→</span>
+            <span className="flex size-7 sm:size-8 items-center justify-center rounded-full bg-lime text-ink transition-transform group-hover:rotate-45">→</span>
           </button>
           <p className="mt-4 text-xs text-muted-foreground">
             No newsletters. No cold-calls. Just a conversation.
           </p>
-        </form>
+          </form>
+        </div>
       </div>
 
       {/* Big wordmark */}
-      <div className="mt-28 border-t-2 border-ink pt-12">
-        <div className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
-          <p className="font-display text-[15vw] leading-none tracking-tighter md:text-[10rem]">
+      <div className="mt-24 md:mt-28 border-t-2 border-ink pt-8 md:pt-12">
+        <div className="flex flex-col gap-6 md:gap-8 md:flex-row md:items-end md:justify-between">
+          <p className="font-display text-[14vw] md:text-[10rem] leading-[0.85] md:leading-none tracking-tighter">
             asset office<span className="text-coral">.</span>
           </p>
-          <div className="text-right text-xs uppercase tracking-widest text-muted-foreground space-y-1">
-            <div className="flex justify-end gap-3 mb-2 text-ink/75 font-semibold font-sans normal-case">
+          <div className="text-left md:text-right text-[10px] md:text-xs uppercase tracking-widest text-muted-foreground space-y-1.5 md:space-y-1 pb-4 md:pb-0">
+            <div className="flex flex-wrap justify-start md:justify-end gap-3 mb-4 md:mb-2 text-ink/75 font-semibold font-sans normal-case text-sm md:text-xs">
               <Link to="/privacy" className="hover:text-coral transition">Privacy Policy</Link>
-              <span>·</span>
+              <span className="hidden md:inline">·</span>
               <Link to="/terms" className="hover:text-coral transition">Terms & Conditions</Link>
             </div>
             <p>© 2026 The Asset Office, PBC</p>

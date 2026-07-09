@@ -70,7 +70,8 @@ async function getUsers() {
       console.warn(`Fetch users from Blob failed: ${response.status}. Falling back to local.`);
       return localUsers;
     }
-    return await response.json();
+    const parsed = await response.json();
+    return Array.isArray(parsed) ? parsed : [];
   } catch (e) {
     console.error("Failed to fetch users from Vercel Blob, falling back to local:", e);
     return localUsers;
@@ -214,7 +215,10 @@ app.post("/api/signup", async (req, res) => {
         }
       };
 
+      console.log(`\n--- CRM SIGNUP LEAD ---`);
       console.log(`Forwarding signup lead to CRM endpoint: ${crmUrl}`);
+      console.log(`Payload:`, JSON.stringify(payload, null, 2));
+      console.log(`-----------------------\n`);
       fetch(crmUrl, {
         method: "POST",
         headers: {
@@ -226,6 +230,7 @@ app.post("/api/signup", async (req, res) => {
       }).then(async response => {
         const text = await response.text();
         console.log(`CRM signup response status ${response.status}: ${text}`);
+        console.log(`CRM signup response headers:`, JSON.stringify(Object.fromEntries(response.headers.entries()), null, 2));
       }).catch(err => {
         console.error("External CRM signup forwarding failed:", err);
       });
@@ -321,7 +326,10 @@ app.post("/api/contact", async (req, res) => {
       }
     };
 
+    console.log(`\n--- CRM CONTACT LEAD ---`);
     console.log(`Forwarding lead to CRM endpoint: ${crmUrl}`);
+    console.log(`Payload:`, JSON.stringify(payload, null, 2));
+    console.log(`-----------------------\n`);
     fetch(crmUrl, {
       method: "POST",
       headers: {
@@ -333,6 +341,7 @@ app.post("/api/contact", async (req, res) => {
     }).then(async response => {
       const text = await response.text();
       console.log(`CRM response status ${response.status}: ${text}`);
+      console.log(`CRM response headers:`, JSON.stringify(Object.fromEntries(response.headers.entries()), null, 2));
     }).catch(err => {
       console.error("External CRM forwarding failed:", err);
     });

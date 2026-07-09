@@ -581,9 +581,9 @@ function DynamicMiniChart() {
 function LiveYieldLedger() {
   const [balance, setBalance] = useState(1482.41098);
   const [events, setEvents] = useState([
-    { id: 1, type: "arbitrage", label: "SOL/USDC Arbitrage capture on Orca", value: "+$84.12", time: "Just now" },
-    { id: 2, type: "staking", label: "Auto-compounded Aave ETH lending yield", value: "+0.0042 ETH", time: "1m ago" },
-    { id: 3, type: "mint", label: "Liquidity premium swap pool yield harvested", value: "+$12.09", time: "3m ago" },
+    { id: "init-1", type: "arbitrage", label: "SOL/USDC Arbitrage capture on Orca", value: "+$84.12", time: "Just now" },
+    { id: "init-2", type: "staking", label: "Auto-compounded Aave ETH lending yield", value: "+0.0042 ETH", time: "1m ago" },
+    { id: "init-3", type: "mint", label: "Liquidity premium swap pool yield harvested", value: "+$12.09", time: "3m ago" },
   ]);
 
   // Live balance ticking
@@ -608,7 +608,7 @@ function LiveYieldLedger() {
     const interval = setInterval(() => {
       const randomEvent = eventPool[Math.floor(Math.random() * eventPool.length)];
       setEvents((prev) => {
-        const nextId = prev[0].id + 1;
+        const nextId = Date.now().toString() + "-" + Math.random().toString(36).substring(2, 9);
         const newEvent = { ...randomEvent, id: nextId, time: "Just now" };
         const updatedPrev = prev.map((e, idx) => ({
           ...e,
@@ -699,38 +699,6 @@ function ContactEnquiryLoggedIn({
   }>({});
   const [status, setStatus] = useState<{ type: "success" | "error"; msg: string } | null>(null);
 
-  // Storage states
-  const [uploadedFileUrl, setUploadedFileUrl] = useState<string | null>(null);
-  const [uploading, setUploading] = useState(false);
-  const [uploadError, setUploadError] = useState<string | null>(null);
-
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setUploading(true);
-    setUploadError(null);
-
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || "Upload failed");
-      }
-      setUploadedFileUrl(data.fileUrl);
-    } catch (err: any) {
-      setUploadError(err.message || "An error occurred during file upload.");
-    } finally {
-      setUploading(false);
-    }
-  };
-
   const validatePhone = (val: string, countryCode: string = selectedCountry) => {
     return validatePhoneNumber(val, countryCode);
   };
@@ -767,7 +735,7 @@ function ContactEnquiryLoggedIn({
       const response = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, phone: fullPhone, countryCode: selectedCountry, fileUrl: uploadedFileUrl }),
+        body: JSON.stringify({ ...form, phone: fullPhone, countryCode: selectedCountry }),
       });
       const data = await response.json();
       setLoading(false);
@@ -778,7 +746,6 @@ function ContactEnquiryLoggedIn({
           msg: "Thank you! Your enquiry has been received successfully.",
         });
         setForm({ ...form, message: "" });
-        setUploadedFileUrl(null);
         setValidationErrors({});
       } else {
         setStatus({
@@ -793,9 +760,12 @@ function ContactEnquiryLoggedIn({
   };
 
   return (
-    <div className="rounded-[2rem] sm:rounded-[2.5rem] border-2 border-ink bg-cream p-5 sm:p-8 md:p-10 shadow-[6px_6px_0_0_var(--ink)] sm:shadow-[10px_10px_0_0_var(--ink)] text-left relative">
-      <form onSubmit={handleSubmit} className="space-y-6 text-left">
-        <div className="grid md:grid-cols-2 gap-6">
+    <div className="w-full">
+      <form
+        onSubmit={handleSubmit}
+        className="rounded-3xl sm:rounded-[2.5rem] border-2 border-ink bg-cream p-4 sm:p-8 md:p-10 shadow-[4px_4px_0_0_var(--ink)] sm:shadow-[10px_10px_0_0_var(--ink)] relative text-left"
+      >
+        <div className="grid gap-4 sm:gap-6 sm:grid-cols-2">
           <div>
             <label className="mb-2 block text-xs font-bold uppercase tracking-widest text-ink/75">
               Full Name
@@ -808,7 +778,7 @@ function ContactEnquiryLoggedIn({
                   setForm({ ...form, name: e.target.value });
                   setValidationErrors((prev) => ({ ...prev, name: validateName(e.target.value) }));
                 }}
-                className={`w-full rounded-2xl border-2 border-ink bg-white/60 px-4 py-3 outline-none focus:border-coral focus:bg-white transition text-ink text-base ${validationErrors.name ? "border-coral bg-coral/5" : ""}`}
+                className={`w-full rounded-2xl border-2 border-ink bg-white/60 px-4 py-3 outline-none focus:border-coral focus:bg-white transition text-ink text-sm sm:text-base ${validationErrors.name ? "border-coral bg-coral/5" : ""}`}
               />
             </div>
             {validationErrors.name && (
@@ -828,7 +798,7 @@ function ContactEnquiryLoggedIn({
                   setForm({ ...form, email: e.target.value });
                   setValidationErrors((prev) => ({ ...prev, email: validateEmail(e.target.value) }));
                 }}
-                className={`w-full rounded-2xl border-2 border-ink bg-white/60 px-4 py-3 outline-none focus:border-coral focus:bg-white transition text-ink text-base ${validationErrors.email ? "border-coral bg-coral/5" : ""}`}
+                className={`w-full rounded-2xl border-2 border-ink bg-white/60 px-4 py-3 outline-none focus:border-coral focus:bg-white transition text-ink text-sm sm:text-base ${validationErrors.email ? "border-coral bg-coral/5" : ""}`}
               />
             </div>
             {validationErrors.email && (
@@ -837,7 +807,7 @@ function ContactEnquiryLoggedIn({
           </div>
         </div>
 
-        <div>
+        <div className="mt-5">
           <label className="mb-2 block text-xs font-bold uppercase tracking-widest text-ink/75">
             Phone Number
           </label>
@@ -848,6 +818,7 @@ function ContactEnquiryLoggedIn({
                 setSelectedCountry(newCountry);
                 setValidationErrors((prev) => ({ ...prev, phone: validatePhone(form.phone, newCountry) }));
               }}
+              className="shrink-0"
             />
             <input
               type="text"
@@ -857,7 +828,7 @@ function ContactEnquiryLoggedIn({
                 setValidationErrors((prev) => ({ ...prev, phone: validatePhone(e.target.value, selectedCountry) }));
               }}
               placeholder={getCountry(selectedCountry).placeholder}
-              className={`flex-1 rounded-2xl border-2 border-ink bg-white/60 px-4 py-3 outline-none focus:border-coral focus:bg-white transition text-ink text-base ${validationErrors.phone ? "border-coral bg-coral/5" : ""}`}
+              className={`flex-1 min-w-0 rounded-2xl border-2 border-ink bg-white/60 px-4 py-3 outline-none focus:border-coral focus:bg-white transition text-ink text-sm sm:text-base ${validationErrors.phone ? "border-coral bg-coral/5" : ""}`}
             />
           </div>
           {validationErrors.phone && (
@@ -865,7 +836,7 @@ function ContactEnquiryLoggedIn({
           )}
         </div>
 
-        <div>
+        <div className="mt-6 md:mt-8">
           <label className="mb-2 block text-xs font-bold uppercase tracking-widest text-ink/75">
             Message (Optional)
           </label>
@@ -878,32 +849,9 @@ function ContactEnquiryLoggedIn({
           />
         </div>
 
-        <div>
-          <label className="mb-2 block text-xs font-bold uppercase tracking-widest text-ink/75">
-            Upload Document (Optional)
-          </label>
-          <div className="flex flex-col gap-2">
-            <input
-              type="file"
-              onChange={handleFileUpload}
-              className="w-full rounded-2xl border-2 border-ink bg-white/60 px-4 py-3 outline-none focus:border-coral focus:bg-white transition text-ink text-base file:mr-4 file:py-1.5 file:px-4 file:rounded-full file:border-2 file:border-ink file:text-xs file:font-bold file:bg-cream file:text-ink file:cursor-pointer hover:file:bg-coral hover:file:text-cream transition-colors duration-200"
-            />
-            {uploading && <p className="text-xs text-ink/60 font-mono">Uploading file to storage...</p>}
-            {uploadError && <p className="text-xs text-coral font-semibold">{uploadError}</p>}
-            {uploadedFileUrl && (
-              <p className="text-xs text-ink flex items-center gap-1.5 font-semibold">
-                <span className="text-green-700 bg-green-100 border border-green-300 rounded px-1.5 py-0.5">✓ File uploaded:</span>
-                <a href={uploadedFileUrl} target="_blank" rel="noopener noreferrer" className="underline font-mono truncate max-w-xs hover:text-coral">
-                  {uploadedFileUrl.split("/").pop()}
-                </a>
-              </p>
-            )}
-          </div>
-        </div>
-
         {status && (
           <div
-            className={`rounded-2xl border-2 p-4 text-sm leading-relaxed ${status.type === "success" ? "border-ink bg-lime text-ink font-bold" : "border-coral bg-coral/10 text-coral font-semibold"}`}
+            className={`mt-6 md:mt-8 rounded-2xl border-2 p-4 text-sm leading-relaxed ${status.type === "success" ? "border-ink bg-lime text-ink font-bold" : "border-coral bg-coral/10 text-coral font-semibold"}`}
           >
             {status.msg}
           </div>
@@ -912,7 +860,7 @@ function ContactEnquiryLoggedIn({
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-full bg-ink px-6 py-4 text-base font-semibold text-cream hover:bg-coral transition-colors flex items-center justify-center gap-2 mt-2 disabled:opacity-50 cursor-pointer shadow-[4px_4px_0_0_var(--ink)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[0_0_0_0_var(--ink)]"
+          className="w-full mt-6 sm:mt-8 rounded-full bg-ink px-8 py-4 text-base font-semibold text-cream hover:bg-coral transition-colors flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer shadow-[4px_4px_0_0_var(--ink)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[0_0_0_0_var(--ink)]"
         >
           {loading ? "Submitting enquiry..." : "Submit Enquiry"}
         </button>

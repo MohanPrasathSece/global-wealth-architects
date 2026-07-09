@@ -48,8 +48,8 @@ export const CountrySelect: React.FC<CountrySelectProps> = ({
           setIsOpen(!isOpen);
           setSearch("");
         }}
-        className="flex items-center justify-between gap-1.5 rounded-2xl border-2 border-ink bg-white/60 px-3 py-3 outline-none focus:border-coral text-ink text-sm w-full h-full cursor-pointer hover:bg-white transition duration-200 whitespace-nowrap"
-        style={{ minWidth: "90px" }}
+        className="flex items-center justify-between gap-1.5 rounded-xl sm:rounded-2xl border-2 border-ink bg-white/60 px-2.5 py-2.5 sm:px-3 sm:py-3 outline-none focus:border-coral text-ink text-xs sm:text-sm w-full h-full cursor-pointer hover:bg-white transition duration-200 whitespace-nowrap"
+        style={{ minWidth: "75px" }}
       >
         <span className="flex items-center gap-1.5">
           <span className="text-lg leading-none">{selectedCountry.flag}</span>
