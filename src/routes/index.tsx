@@ -492,13 +492,13 @@ function ContactFooter() {
               label="I'm investing as"
               options={["An individual", "A family", "A business", "An institution"]}
               value={form.investingAs}
-              onChange={(e) => setForm({ ...form, investingAs: e.target.value })}
+              onChange={(val) => setForm({ ...form, investingAs: val })}
             />
             <SelectField
               label="Rough portfolio size"
               options={["Under $100k", "$100k - $500k", "$500k - $2M", "$2M+"]}
               value={form.portfolioSize}
-              onChange={(e) => setForm({ ...form, portfolioSize: e.target.value })}
+              onChange={(val) => setForm({ ...form, portfolioSize: val })}
             />
           </div>
           <div className="mt-5">
@@ -591,30 +591,67 @@ function SelectField({
 }: {
   label: string;
   options: string[];
-  value?: string;
-  onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  value: string;
+  onChange: (val: string) => void;
 }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const handleOutsideClick = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, []);
+
   return (
-    <label className="block relative">
+    <div className="relative block text-left" ref={dropdownRef}>
       <span className="text-xs font-bold uppercase tracking-widest text-ink/75">{label}</span>
       <div className="relative mt-2">
-        <select
-          value={value}
-          onChange={onChange}
-          className="w-full rounded-2xl border-2 border-ink bg-white/60 px-4 py-3 text-base text-ink outline-none focus:border-coral focus:bg-white transition cursor-pointer appearance-none pr-10"
+        <button
+          type="button"
+          onClick={() => setIsOpen(!isOpen)}
+          className={`w-full flex items-center justify-between rounded-2xl border-2 border-ink bg-white/60 px-4 py-3 text-base text-ink outline-none transition cursor-pointer select-none text-left ${isOpen ? "border-coral" : ""}`}
         >
-          {options.map((o) => (
-            <option key={o} className="bg-cream text-ink">
-              {o}
-            </option>
-          ))}
-        </select>
-        <div className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 flex items-center text-ink/50">
-          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+          <span>{value || options[0]}</span>
+          <svg
+            className={`h-4 w-4 text-ink/50 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
             <polyline points="6 9 12 15 18 9" />
           </svg>
-        </div>
+        </button>
+
+        {isOpen && (
+          <div className="absolute left-0 right-0 z-50 mt-2 max-h-60 overflow-y-auto rounded-2xl border-2 border-ink bg-cream p-1.5 shadow-[6px_6px_0_0_var(--ink)]">
+            <div className="space-y-1">
+              {options.map((option) => (
+                <button
+                  key={option}
+                  type="button"
+                  onClick={() => {
+                    onChange(option);
+                    setIsOpen(false);
+                  }}
+                  className={`w-full text-left rounded-xl px-3 py-2 text-sm font-semibold transition cursor-pointer ${
+                    value === option
+                      ? "bg-ink text-cream"
+                      : "text-ink hover:bg-ink/5"
+                  }`}
+                >
+                  {option}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
-    </label>
+    </div>
   );
 }
