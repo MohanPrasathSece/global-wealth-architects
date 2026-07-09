@@ -81,9 +81,10 @@ function Index() {
 /* ---------------- NAV ---------------- */
 function Nav({ onOpenAuth }: { onOpenAuth: (view: "login" | "signup") => void }) {
   const { user, logout } = useAuth();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-6">
+    <nav className="relative mx-auto flex max-w-7xl items-center justify-between px-6 py-6">
       <a href="#" className="flex items-center gap-2.5">
         <img src={logoAssetOffice} alt="The Asset Office Logo" className="h-9 w-auto object-contain" />
         <span className="font-display text-2xl font-semibold tracking-tight">The Asset Office</span>
@@ -96,18 +97,18 @@ function Nav({ onOpenAuth }: { onOpenAuth: (view: "login" | "signup") => void })
           <Link to="/dashboard" className="hover:text-coral transition-colors">Dashboard</Link>
         )}
       </div>
-      <div className="flex items-center gap-4">
+      <div className="hidden md:flex items-center gap-4">
         {user ? (
           <div className="flex items-center gap-3">
             <Link
               to="/dashboard"
-              className="hidden md:inline-flex items-center gap-2 rounded-full border border-ink/20 bg-cream px-5 py-2.5 text-sm font-semibold text-ink hover:bg-ink hover:text-cream transition-colors"
+              className="inline-flex items-center gap-2 rounded-full border border-ink/20 bg-cream px-5 py-2.5 text-sm font-semibold text-ink hover:bg-ink hover:text-cream transition-colors"
             >
               Dashboard
             </Link>
             <button
               onClick={logout}
-              className="hidden md:inline-flex items-center gap-2 rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-cream hover:bg-coral transition-colors cursor-pointer"
+              className="inline-flex items-center gap-2 rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-cream hover:bg-coral transition-colors cursor-pointer"
             >
               Sign Out
             </button>
@@ -116,19 +117,112 @@ function Nav({ onOpenAuth }: { onOpenAuth: (view: "login" | "signup") => void })
           <div className="flex gap-2">
             <button
               onClick={() => onOpenAuth("login")}
-              className="hidden md:inline-flex items-center gap-2 rounded-full border border-ink/20 bg-cream px-5 py-2.5 text-sm font-semibold text-ink hover:bg-ink hover:text-cream transition-colors cursor-pointer"
+              className="inline-flex items-center gap-2 rounded-full border border-ink/20 bg-cream px-5 py-2.5 text-sm font-semibold text-ink hover:bg-ink hover:text-cream transition-colors cursor-pointer"
             >
               Sign In
             </button>
             <button
               onClick={() => onOpenAuth("signup")}
-              className="hidden md:inline-flex items-center gap-2 rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-cream hover:bg-coral transition-colors cursor-pointer"
+              className="inline-flex items-center gap-2 rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-cream hover:bg-coral transition-colors cursor-pointer"
             >
               Sign Up
             </button>
           </div>
         )}
       </div>
+
+      {/* Mobile Menu Toggle Button */}
+      <button
+        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        className="flex md:hidden items-center justify-center p-2 rounded-full border-2 border-ink bg-cream text-ink hover:bg-coral hover:text-cream transition cursor-pointer"
+        aria-label="Toggle menu"
+      >
+        {isMobileMenuOpen ? (
+          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        ) : (
+          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+            <line x1="3" y1="12" x2="21" y2="12" />
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <line x1="3" y1="18" x2="21" y2="18" />
+          </svg>
+        )}
+      </button>
+
+      {/* Mobile Dropdown Menu Overlay */}
+      {isMobileMenuOpen && (
+        <div className="absolute left-6 right-6 top-20 z-50 rounded-3xl border-2 border-ink bg-cream p-6 shadow-[8px_8px_0_0_var(--ink)] md:hidden">
+          <div className="flex flex-col gap-4 text-base font-bold text-ink">
+            <a
+              href="#philosophy"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="hover:text-coral transition-colors py-2 border-b border-ink/10"
+            >
+              How we think
+            </a>
+            <a
+              href="#trust"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="hover:text-coral transition-colors py-2 border-b border-ink/10"
+            >
+              How it works
+            </a>
+            <a
+              href="#contact"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="hover:text-coral transition-colors py-2 border-b border-ink/10"
+            >
+              Get in
+            </a>
+            
+            <div className="flex flex-col gap-3 pt-2">
+              {user ? (
+                <>
+                  <Link
+                    to="/dashboard"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="w-full text-center rounded-full border-2 border-ink bg-cream px-5 py-3 text-sm font-bold text-ink hover:bg-ink hover:text-cream transition-colors"
+                  >
+                    Dashboard
+                  </Link>
+                  <button
+                    onClick={() => {
+                      logout();
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="w-full text-center rounded-full bg-ink px-5 py-3 text-sm font-bold text-cream hover:bg-coral transition-colors cursor-pointer"
+                  >
+                    Sign Out
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={() => {
+                      onOpenAuth("login");
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="w-full text-center rounded-full border-2 border-ink bg-cream px-5 py-3 text-sm font-bold text-ink hover:bg-ink hover:text-cream transition-colors cursor-pointer"
+                  >
+                    Sign In
+                  </button>
+                  <button
+                    onClick={() => {
+                      onOpenAuth("signup");
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="w-full text-center rounded-full bg-ink px-5 py-3 text-sm font-bold text-cream hover:bg-coral transition-colors cursor-pointer"
+                  >
+                    Sign Up
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </nav>
   );
 }
@@ -144,7 +238,7 @@ function Hero({ onOpenAuth }: { onOpenAuth: (view: "login" | "signup") => void }
           <span className="chip">
             <span className="size-1.5 rounded-full bg-coral" /> Maximum Security. Relentless Growth.
           </span>
-          <h1 className="mt-6 font-display text-6xl leading-[0.95] tracking-tight md:text-8xl">
+          <h1 className="mt-6 font-display text-5xl sm:text-6xl leading-[0.95] tracking-tight md:text-8xl">
             Crypto wealth,
             <br />
             <span className="italic text-coral">secured</span> &amp;{" "}
@@ -404,8 +498,6 @@ function ContactFooter() {
     name: "",
     email: "",
     phone: "",
-    investingAs: "An individual",
-    portfolioSize: "Under $100k",
     message: "",
   });
   const [selectedCountry, setSelectedCountry] = useState("CH");
@@ -458,7 +550,7 @@ function ContactFooter() {
           email: form.email,
           phone: fullPhone,
           countryCode: selectedCountry,
-          message: `Investing as: ${form.investingAs}. Portfolio size: ${form.portfolioSize}. Message: ${form.message}`,
+          message: form.message,
         }),
       });
       const data = await response.json();
@@ -473,8 +565,6 @@ function ContactFooter() {
           name: "",
           email: "",
           phone: "",
-          investingAs: "An individual",
-          portfolioSize: "Under $100k",
           message: "",
         });
         setValidationErrors({});
@@ -573,21 +663,6 @@ function ContactFooter() {
             {validationErrors.phone && (
               <p className="text-xs text-coral mt-1 font-semibold">{validationErrors.phone}</p>
             )}
-          </div>
-
-          <div className="mt-5 grid gap-5 sm:grid-cols-2">
-            <SelectField
-              label="I'm investing as"
-              options={["An individual", "A family", "A business", "An institution"]}
-              value={form.investingAs}
-              onChange={(val) => setForm({ ...form, investingAs: val })}
-            />
-            <SelectField
-              label="Rough portfolio size"
-              options={["Under $100k", "$100k - $500k", "$500k - $2M", "$2M+"]}
-              value={form.portfolioSize}
-              onChange={(val) => setForm({ ...form, portfolioSize: val })}
-            />
           </div>
 
           <div className="mt-5">
