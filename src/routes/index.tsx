@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import heroStack from "@/assets/hero-stack.jpg";
+import logoAssetOffice from "../assets/logo asset office.png";
 import { useAuth } from "../context/AuthContext";
 import { AuthModals } from "../components/AuthModals";
 
@@ -24,11 +25,13 @@ function Index() {
       <Philosophy />
       <ProcessTrust />
       <ContactFooter />
-      <AuthModals
-        isOpen={isAuthModalOpen}
-        onClose={() => setIsAuthModalOpen(false)}
-        initialView={authView}
-      />
+      {isAuthModalOpen && (
+        <AuthModals
+          isOpen={isAuthModalOpen}
+          onClose={() => setIsAuthModalOpen(false)}
+          initialView={authView}
+        />
+      )}
     </div>
   );
 }
@@ -39,8 +42,8 @@ function Nav({ onOpenAuth }: { onOpenAuth: (view: "login" | "signup") => void })
 
   return (
     <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-6">
-      <a href="#" className="flex items-center gap-2">
-        <span className="grid size-9 place-items-center rounded-full bg-ink text-cream font-display text-lg font-bold">a</span>
+      <a href="#" className="flex items-center gap-2.5">
+        <img src={logoAssetOffice} alt="The Asset Office Logo" className="h-9 w-auto object-contain" />
         <span className="font-display text-2xl font-semibold tracking-tight">The Asset Office</span>
       </a>
       <div className="hidden items-center gap-8 md:flex text-sm font-medium">

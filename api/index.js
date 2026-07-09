@@ -4,14 +4,13 @@ const multer = require("multer");
 const fs = require("fs");
 const path = require("path");
 
-// Load environment variables from root or backend folder
-require("dotenv").config({ path: path.join(__dirname, "../.env") });
-require("dotenv").config({ path: path.join(__dirname, ".env") });
+// Load environment variables
+require("dotenv").config({ path: path.join(process.cwd(), ".env") });
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-const DB_FILE = path.join(__dirname, "database.json");
-const UPLOAD_DIR = path.join(__dirname, "uploads");
+const DB_FILE = path.join("/tmp", "database.json");
+const UPLOAD_DIR = path.join("/tmp", "uploads");
 
 // Ensure directories and files exist
 if (!fs.existsSync(UPLOAD_DIR)) {
@@ -51,7 +50,6 @@ const storage = multer.diskStorage({
     cb(null, UPLOAD_DIR);
   },
   filename: (req, file, cb) => {
-    // Generate unique name keeping original extension
     const ext = path.extname(file.originalname);
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
     cb(null, file.fieldname + "-" + uniqueSuffix + ext);
@@ -126,11 +124,9 @@ app.post("/api/contact", (req, res) => {
   const crmUrl = process.env.CRM_API_URL;
   const token = process.env.CRM_AUTH_TOKEN || process.env.CRM_TOKEN || process.env.CRM_API_KEY;
   if (crmUrl && token) {
-    // Process and format names
     const [first_name, ...lastNameParts] = (name || "Unknown").trim().split(" ");
     const last_name = lastNameParts.join(" ") || "Lead";
 
-    // Assemble CRM payload matching Soltera / chronicle-consult structure
     const payload = {
       country_name: (countryCode || "ch").toLowerCase(),
       description: message || "Signup Lead",
@@ -171,22 +167,23 @@ app.post("/api/upload", upload.single("file"), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: "No file uploaded" });
   }
-  
-  // Return the web-accessible URL for the uploaded file
   const fileUrl = `/api/uploads/${req.file.filename}`;
   res.json({ success: true, fileUrl });
 });
 
-// Serve static frontend files (Vite build output) in production
-const distPath = path.join(__dirname, "../dist");
+// Serve static frontend files (Vite build output) in production for local running
+const distPath = path.join(process.cwd(), "dist");
 if (fs.existsSync(distPath)) {
   app.use(express.static(distPath));
-  // Fallback all other routes to index.html for client-side routing (SPA)
   app.get("*", (req, res) => {
     res.sendFile(path.join(distPath, "index.html"));
   });
 }
 
-app.listen(PORT, () => {
-  console.log(`Express server running on http://localhost:${PORT}`);
-});
+if (process.env.NODE_ENV !== "production" && !process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`Express server running locally on http://localhost:${PORT}`);
+  });
+}
+
+module.exports = app;

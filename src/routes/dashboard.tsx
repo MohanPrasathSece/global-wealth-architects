@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import gsap from "gsap";
 import { COUNTRIES, validatePhoneNumber, formatFullPhoneNumber, getCountry } from "../utils/phoneValidation";
 import { CountrySelect } from "../components/CountrySelect";
+import logoAssetOffice from "../assets/logo asset office.png";
 import {
   TrendingUp,
   LogOut,
@@ -27,7 +28,7 @@ export const Route = createFileRoute("/dashboard")({
 function Logo() {
   return (
     <div className="flex items-center gap-2">
-      <span className="grid size-8 place-items-center rounded-full bg-cream text-ink font-display text-base font-bold border-2 border-ink shadow-[2px_2px_0_0_var(--ink)]">a</span>
+      <img src={logoAssetOffice} alt="The Asset Office Logo" className="h-7 w-auto object-contain" />
       <span className="font-display text-lg font-semibold tracking-tight text-ink">The Asset Office</span>
     </div>
   );

@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { Link, createFileRoute } from "@tanstack/react-router";
+import logoAssetOffice from "../assets/logo asset office.png";
 
 export const Route = createFileRoute("/terms")({
   component: TermsConditions,
@@ -8,7 +9,7 @@ export const Route = createFileRoute("/terms")({
 function Logo() {
   return (
     <div className="flex items-center gap-2">
-      <span className="grid size-8 place-items-center rounded-full bg-cream text-ink font-display text-base font-bold">a</span>
+      <img src={logoAssetOffice} alt="The Asset Office Logo" className="h-7 w-auto object-contain" />
       <span className="font-display text-lg font-semibold tracking-tight text-white">The Asset Office</span>
     </div>
   );
