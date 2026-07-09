@@ -15,7 +15,7 @@ import "@fontsource/fraunces/400.css";
 import "@fontsource/fraunces/500.css";
 import "@fontsource/fraunces/600-italic.css";
 import "@fontsource/fraunces/700.css";
-import "@fontsource-variable/inter";
+import "@fontsource-variable/inter/index.css";
 import "@fontsource/space-grotesk/500.css";
 import "@fontsource/space-grotesk/700.css";
 
