@@ -53,7 +53,7 @@ function TermsConditions() {
           <section>
             <h2 className="text-lg font-bold text-white mb-2">1. Acceptance of Terms</h2>
             <p>
-              By accessing, browsing, or using the Zyvora Finance website and services, you signify your
+              By accessing, browsing, or using The Asset Office website and services, you signify your
               absolute agreement to be bound by these Terms & Conditions. If you do not accept these
               terms in full, you must cease using our resources immediately.
             </p>
@@ -71,7 +71,7 @@ function TermsConditions() {
           <section>
             <h2 className="text-lg font-bold text-white mb-2">3. Website Purpose</h2>
             <p>
-              Zyvora Finance provides a premium, interactive educational platform focused on cryptocurrency
+              The Asset Office provides a premium, interactive educational platform focused on cryptocurrency
               markets, blockchain protocols, and portfolio design principles.
             </p>
           </section>
@@ -107,7 +107,7 @@ function TermsConditions() {
             <h2 className="text-lg font-bold text-white mb-2">7. Intellectual Property</h2>
             <p>
               All text, graphic illustrations, neomorphic chart designs, and code assets on this
-              platform are the property of Zyvora Finance and are protected by applicable intellectual
+              platform are the property of The Asset Office and are protected by applicable intellectual
               property statutes.
             </p>
           </section>
@@ -115,7 +115,7 @@ function TermsConditions() {
           <section>
             <h2 className="text-lg font-bold text-white mb-2">8. Accuracy of Information</h2>
             <p>
-              While Zyvora Finance endeavors to present correct training guides, we do not warrant the
+              While The Asset Office endeavors to present correct training guides, we do not warrant the
               absolute accuracy, completeness, or timeliness of market simulator numbers.
             </p>
           </section>
@@ -123,7 +123,7 @@ function TermsConditions() {
           <section>
             <h2 className="text-lg font-bold text-white mb-2">9. No Financial Advice</h2>
             <p>
-              The content provided within Zyvora Finance's educational dashboard does not constitute
+              The content provided within The Asset Office's educational dashboard does not constitute
               financial advice. All educational inputs are for informational research purposes only.
             </p>
           </section>
@@ -131,7 +131,7 @@ function TermsConditions() {
           <section>
             <h2 className="text-lg font-bold text-white mb-2">10. No Investment Advice</h2>
             <p>
-              Zyvora Finance does not offer recommendation matrices for purchasing individual digital tokens
+              The Asset Office does not offer recommendation matrices for purchasing individual digital tokens
               or executing leveraged trading strategies.
             </p>
           </section>
@@ -149,7 +149,7 @@ function TermsConditions() {
           <section>
             <h2 className="text-lg font-bold text-white mb-2">12. No Guarantee of Returns</h2>
             <p>
-              Past simulations do not dictate future outcomes. Zyvora Finance makes no representation or
+              Past simulations do not dictate future outcomes. The Asset Office makes no representation or
               warranty that any portfolio design will achieve positive yields.
             </p>
           </section>
@@ -157,7 +157,7 @@ function TermsConditions() {
           <section>
             <h2 className="text-lg font-bold text-white mb-2">13. Limitation of Liability</h2>
             <p>
-              To the absolute extent permitted by law, Zyvora Finance and its affiliates shall not be liable
+              To the absolute extent permitted by law, The Asset Office and its affiliates shall not be liable
               for any direct, indirect, incidental, or consequential damages resulting from your
               access to or inability to access our services.
             </p>
@@ -166,7 +166,7 @@ function TermsConditions() {
           <section>
             <h2 className="text-lg font-bold text-white mb-2">14. Indemnification</h2>
             <p>
-              You agree to indemnify and hold harmless Zyvora Finance, its directors, and technical
+              You agree to indemnify and hold harmless The Asset Office, its directors, and technical
               developers from any claims or legal demands arising from your misuse of the platform
               or violation of these terms.
             </p>
@@ -242,7 +242,7 @@ function TermsConditions() {
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-6">
           <div className="flex items-center gap-2">
             <Logo className="h-6 w-6" glow={false} />
-            <span className="font-bold text-white">Zyvora Finance</span>
+            <span className="font-bold text-white">The Asset Office</span>
             <span className="text-xs text-white/40 ml-2">
               &copy; 2026 &middot; The Future of Digital Wealth
             </span>

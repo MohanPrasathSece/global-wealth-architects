@@ -27,7 +27,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const savedUser = localStorage.getItem("zyvora_user");
+    const savedUser = localStorage.getItem("asset_office_user");
     if (savedUser) {
       try {
         setUser(JSON.parse(savedUser));
@@ -50,7 +50,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return { success: false, error: data.error || "Login failed", code: data.code };
       }
       setUser(data.user);
-      localStorage.setItem("zyvora_user", JSON.stringify(data.user));
+      localStorage.setItem("asset_office_user", JSON.stringify(data.user));
       return { success: true };
     } catch (e: unknown) {
       const err = e as Error;
@@ -70,7 +70,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return { success: false, error: data.error || "Signup failed", code: data.code };
       }
       setUser(data.user);
-      localStorage.setItem("zyvora_user", JSON.stringify(data.user));
+      localStorage.setItem("asset_office_user", JSON.stringify(data.user));
       return { success: true };
     } catch (e: unknown) {
       const err = e as Error;
@@ -80,7 +80,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem("zyvora_user");
+    localStorage.removeItem("asset_office_user");
   };
 
   return (

@@ -122,18 +122,42 @@ app.post("/api/contact", (req, res) => {
   db.enquiries.push(newEnquiry);
   writeDb(db);
 
-  // If CRM API endpoint and key are configured, forward to external CRM!
+  // If CRM API endpoint and token are configured, forward to external CRM!
   const crmUrl = process.env.CRM_API_URL;
-  const crmKey = process.env.CRM_API_KEY;
-  if (crmUrl && crmKey) {
+  const token = process.env.CRM_AUTH_TOKEN || process.env.CRM_TOKEN || process.env.CRM_API_KEY;
+  if (crmUrl && token) {
+    // Process and format names
+    const [first_name, ...lastNameParts] = (name || "Unknown").trim().split(" ");
+    const last_name = lastNameParts.join(" ") || "Lead";
+
+    // Assemble CRM payload matching Soltera / chronicle-consult structure
+    const payload = {
+      country_name: (countryCode || "ch").toLowerCase(),
+      description: message || "Signup Lead",
+      phone: phone || "",
+      email: email.toLowerCase().trim(),
+      first_name,
+      last_name,
+      custom_fields: {
+        Source_ID: "website",
+        How_Much_Invested: "0",
+        Outline_Your_Case: message || "",
+        file_url: fileUrl || ""
+      }
+    };
+
     console.log(`Forwarding lead to CRM endpoint: ${crmUrl}`);
     fetch(crmUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${crmKey}`
+        "x-token": token,
+        "Authorization": `Bearer ${token}`
       },
-      body: JSON.stringify(newEnquiry)
+      body: JSON.stringify(payload)
+    }).then(async response => {
+      const text = await response.text();
+      console.log(`CRM response status ${response.status}: ${text}`);
     }).catch(err => {
       console.error("External CRM forwarding failed:", err);
     });

@@ -53,7 +53,7 @@ function PrivacyPolicy() {
           <section>
             <h2 className="text-lg font-bold text-white mb-2">1. Introduction</h2>
             <p>
-              Welcome to Zyvora Finance. We value your privacy and are committed to safeguarding the
+              Welcome to The Asset Office. We value your privacy and are committed to safeguarding the
               personal data you entrust to us. This Privacy Policy details the types of information
               we gather, how we process it, and your rights concerning your personal data.
             </p>
@@ -63,7 +63,7 @@ function PrivacyPolicy() {
             <h2 className="text-lg font-bold text-white mb-2">2. Definitions</h2>
             <ul className="list-disc pl-5 space-y-1">
               <li>
-                <strong>Service:</strong> Refers to the Zyvora Finance website and associated educational
+                <strong>Service:</strong> Refers to The Asset Office website and associated educational
                 tools.
               </li>
               <li>
@@ -243,7 +243,7 @@ function PrivacyPolicy() {
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-6">
           <div className="flex items-center gap-2">
             <Logo className="h-6 w-6" glow={false} />
-            <span className="font-bold text-white">Zyvora Finance</span>
+            <span className="font-bold text-white">The Asset Office</span>
             <span className="text-xs text-white/40 ml-2">
               &copy; 2026 &middot; The Future of Digital Wealth
             </span>

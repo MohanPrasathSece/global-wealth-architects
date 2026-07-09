@@ -127,7 +127,7 @@ export const AuthModals: React.FC<AuthModalsProps> = ({
     const res = await signup(name, email, fullPhone, selectedCountry);
     setLoading(false);
     if (res.success) {
-      setSuccess("Account created! Welcome to Zyvora.");
+      setSuccess("Account created! Welcome to The Asset Office.");
       setTimeout(() => { handleClose(); if (onSuccess) onSuccess(); }, 1100);
     } else if (res.code === "ALREADY_EXISTS") {
       setAlreadyExists(true);
