@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import heroStack from "@/assets/hero-stack.jpg";
 import logoAssetOffice from "../assets/logo asset office.png";
 import { useAuth } from "../context/AuthContext";
@@ -42,6 +42,7 @@ function ScrollSection({ children, className = "" }: { children: React.ReactNode
 function Index() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authView, setAuthView] = useState<"login" | "signup">("login");
+  const navigate = useNavigate();
 
   const openAuth = (view: "login" | "signup") => {
     setAuthView(view);
@@ -68,6 +69,7 @@ function Index() {
           isOpen={isAuthModalOpen}
           onClose={() => setIsAuthModalOpen(false)}
           initialView={authView}
+          onSuccess={() => navigate({ to: "/dashboard" })}
         />
       )}
     </div>
