@@ -52,7 +52,7 @@ function Index() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground overflow-x-clip pt-28">
+    <div className="min-h-screen bg-background text-foreground overflow-x-clip pt-4">
       <Nav onOpenAuth={openAuth} />
       <ScrollSection>
         <Hero onOpenAuth={openAuth} />
@@ -84,7 +84,7 @@ function Nav({ onOpenAuth }: { onOpenAuth: (view: "login" | "signup") => void })
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 px-4">
+    <header className="relative w-full z-50 px-4">
       <nav className="mx-auto mt-4 flex max-w-7xl items-center justify-between rounded-full border-2 border-ink bg-cream px-6 py-3 shadow-[4px_4px_0_0_var(--ink)]">
         <a href="#" className="flex items-center gap-2">
           <img src={logoAssetOffice} alt="The Asset Office Logo" className="h-7 w-auto object-contain" />
@@ -152,75 +152,104 @@ function Nav({ onOpenAuth }: { onOpenAuth: (view: "login" | "signup") => void })
           )}
         </button>
 
-        {/* Mobile Dropdown Menu Overlay */}
+        {/* Mobile Full Screen Menu Overlay */}
         {isMobileMenuOpen && (
-          <div className="absolute left-4 right-4 top-16 z-50 rounded-3xl border-2 border-ink bg-cream p-5 shadow-[8px_8px_0_0_var(--ink)] md:hidden">
-            <div className="flex flex-col gap-3 text-sm font-bold text-ink">
+          <div className="fixed inset-0 z-[100] bg-cream flex flex-col justify-between p-8 md:hidden overflow-y-auto">
+            {/* Top Row */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <img src={logoAssetOffice} alt="The Asset Office Logo" className="h-7 w-auto object-contain" />
+                <span className="font-display text-lg font-semibold tracking-tight text-ink">The Asset Office</span>
+              </div>
+              <button
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="p-1.5 rounded-full border-2 border-ink bg-cream text-ink hover:bg-coral hover:text-cream transition cursor-pointer"
+                aria-label="Close menu"
+              >
+                <svg className="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Center Links */}
+            <div className="flex flex-col items-center justify-center flex-1 my-12 text-center text-3xl font-display font-bold text-ink space-y-6">
               <a
                 href="#philosophy"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="hover:text-coral transition-colors py-2 border-b border-ink/10"
+                className="hover:text-coral transition-colors py-2"
               >
                 How we think
               </a>
               <a
                 href="#trust"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="hover:text-coral transition-colors py-2 border-b border-ink/10"
+                className="hover:text-coral transition-colors py-2"
               >
                 How it works
               </a>
               <a
                 href="#contact"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="hover:text-coral transition-colors py-2 border-b border-ink/10"
+                className="hover:text-coral transition-colors py-2"
               >
                 Get in
               </a>
-              
-              <div className="flex flex-col gap-2 pt-1">
-                {user ? (
-                  <>
-                    <Link
-                      to="/dashboard"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="w-full text-center rounded-full border-2 border-ink bg-cream py-2.5 text-xs font-bold text-ink hover:bg-ink hover:text-cream transition-colors"
-                    >
-                      Dashboard
-                    </Link>
-                    <button
-                      onClick={() => {
-                        logout();
-                        setIsMobileMenuOpen(false);
-                      }}
-                      className="w-full text-center rounded-full bg-ink py-2.5 text-xs font-bold text-cream hover:bg-coral transition-colors cursor-pointer"
-                    >
-                      Sign Out
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <button
-                      onClick={() => {
-                        onOpenAuth("login");
-                        setIsMobileMenuOpen(false);
-                      }}
-                      className="w-full text-center rounded-full border-2 border-ink bg-cream py-2.5 text-xs font-bold text-ink hover:bg-ink hover:text-cream transition-colors cursor-pointer"
-                    >
-                      Sign In
-                    </button>
-                    <button
-                      onClick={() => {
-                        onOpenAuth("signup");
-                        setIsMobileMenuOpen(false);
-                      }}
-                      className="w-full text-center rounded-full bg-ink py-2.5 text-xs font-bold text-cream hover:bg-coral transition-colors cursor-pointer"
-                    >
-                      Sign Up
-                    </button>
-                  </>
-                )}
-              </div>
+              {user && (
+                <Link
+                  to="/dashboard"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="hover:text-coral transition-colors py-2"
+                >
+                  Dashboard
+                </Link>
+              )}
+            </div>
+
+            {/* Bottom Row */}
+            <div className="w-full space-y-3 pt-6 border-t-2 border-ink/10">
+              {user ? (
+                <>
+                  <Link
+                    to="/dashboard"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="block w-full text-center rounded-full border-2 border-ink bg-cream py-3.5 text-sm font-bold text-ink hover:bg-ink hover:text-cream transition-colors"
+                  >
+                    Dashboard
+                  </Link>
+                  <button
+                    onClick={() => {
+                      logout();
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="w-full text-center rounded-full bg-ink py-3.5 text-sm font-bold text-cream hover:bg-coral transition-colors cursor-pointer"
+                  >
+                    Sign Out
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={() => {
+                      onOpenAuth("login");
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="w-full text-center rounded-full border-2 border-ink bg-cream py-3.5 text-sm font-bold text-ink hover:bg-ink hover:text-cream transition-colors cursor-pointer"
+                  >
+                    Sign In
+                  </button>
+                  <button
+                    onClick={() => {
+                      onOpenAuth("signup");
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="w-full text-center rounded-full bg-ink py-3.5 text-sm font-bold text-cream hover:bg-coral transition-colors cursor-pointer"
+                  >
+                    Sign Up
+                  </button>
+                </>
+              )}
             </div>
           </div>
         )}
@@ -596,7 +625,7 @@ function ContactFooter() {
         </div>
 
         <form
-          className="lg:col-span-3 rounded-[2.5rem] border-2 border-ink bg-cream p-8 md:p-10 shadow-[10px_10px_0_0_var(--ink)]"
+          className="lg:col-span-3 rounded-[2rem] sm:rounded-[2.5rem] border-2 border-ink bg-cream p-5 sm:p-8 md:p-10 shadow-[6px_6px_0_0_var(--ink)] sm:shadow-[10px_10px_0_0_var(--ink)]"
           onSubmit={handleSubmit}
         >
           <div className="grid gap-5 sm:grid-cols-2">

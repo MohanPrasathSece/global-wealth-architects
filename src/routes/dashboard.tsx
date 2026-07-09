@@ -92,12 +92,12 @@ function Dashboard() {
   if (!user) return null;
 
   return (
-    <div ref={containerRef} className="relative min-h-screen bg-background text-foreground overflow-x-hidden pt-28 pb-20">
+    <div ref={containerRef} className="relative min-h-screen bg-background text-foreground overflow-x-hidden pt-4 pb-20">
       {/* Background gradients */}
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(242,120,75,0.06),transparent_50%),radial-gradient(circle_at_80%_80%,rgba(144,238,144,0.06),transparent_50%)]" />
 
       {/* Nav Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 px-4">
+      <header className="relative w-full z-50 px-4">
         <div className="mx-auto mt-4 flex max-w-7xl items-center justify-between rounded-full border-2 border-ink bg-cream px-6 py-3 shadow-[4px_4px_0_0_var(--ink)]">
           <Link to="/" className="flex items-center gap-2">
             <Logo />
@@ -793,7 +793,7 @@ function ContactEnquiryLoggedIn({
   };
 
   return (
-    <div className="rounded-[2.5rem] border-2 border-ink bg-cream p-8 md:p-10 shadow-[10px_10px_0_0_var(--ink)] text-left relative">
+    <div className="rounded-[2rem] sm:rounded-[2.5rem] border-2 border-ink bg-cream p-5 sm:p-8 md:p-10 shadow-[6px_6px_0_0_var(--ink)] sm:shadow-[10px_10px_0_0_var(--ink)] text-left relative">
       <form onSubmit={handleSubmit} className="space-y-6 text-left">
         <div className="grid md:grid-cols-2 gap-6">
           <div>
