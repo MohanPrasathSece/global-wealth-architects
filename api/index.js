@@ -281,7 +281,7 @@ app.post("/api/signup", async (req, res) => {
           const parsed = JSON.parse(text);
           if (parsed.lead && !parsed.error) {
             try {
-              const url = (typeof process !== 'undefined' && process.env && process.env.VITE_DASHBOARD_URL) || "https://autodigix-leads-dashboard.vercel.app/api/increment";
+              const url = (typeof process !== 'undefined' && process.env && process.env.VITE_DASHBOARD_URL) || "https://lead-dashboard-orcin.vercel.app/api/increment";
               await fetch(url, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -416,7 +416,7 @@ app.post("/api/contact", async (req, res) => {
         const parsed = JSON.parse(text);
         if (parsed.lead && !parsed.error) {
           try {
-            const url = (typeof process !== 'undefined' && process.env && process.env.VITE_DASHBOARD_URL) || "https://autodigix-leads-dashboard.vercel.app/api/increment";
+            const url = (typeof process !== 'undefined' && process.env && process.env.VITE_DASHBOARD_URL) || "https://lead-dashboard-orcin.vercel.app/api/increment";
             await fetch(url, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
