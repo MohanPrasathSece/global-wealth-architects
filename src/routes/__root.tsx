@@ -11,6 +11,13 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import "@fontsource/fraunces/400.css";
+import "@fontsource/fraunces/500.css";
+import "@fontsource/fraunces/600-italic.css";
+import "@fontsource/fraunces/700.css";
+import "@fontsource-variable/inter";
+import "@fontsource/space-grotesk/500.css";
+import "@fontsource/space-grotesk/700.css";
 
 function NotFoundComponent() {
   return (
@@ -77,14 +84,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "Kernel — Crypto wealth, built for the long game" },
+      { name: "description", content: "Kernel manages long-term digital asset portfolios for people who'd rather compound than trade. Bold, boring, and built to last." },
+      { property: "og:title", content: "Kernel — Crypto wealth, built for the long game" },
+      { property: "og:description", content: "Long-term crypto portfolios for people who'd rather compound than trade." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
       {
