@@ -52,7 +52,7 @@ function Index() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground overflow-x-clip">
+    <div className="min-h-screen bg-background text-foreground overflow-x-clip pt-28">
       <Nav onOpenAuth={openAuth} />
       <ScrollSection>
         <Hero onOpenAuth={openAuth} />
@@ -84,146 +84,148 @@ function Nav({ onOpenAuth }: { onOpenAuth: (view: "login" | "signup") => void })
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <nav className="relative mx-auto flex max-w-7xl items-center justify-between px-6 py-6">
-      <a href="#" className="flex items-center gap-2.5">
-        <img src={logoAssetOffice} alt="The Asset Office Logo" className="h-9 w-auto object-contain" />
-        <span className="font-display text-2xl font-semibold tracking-tight">The Asset Office</span>
-      </a>
-      <div className="hidden items-center gap-8 md:flex text-sm font-medium">
-        <a href="#philosophy" className="hover:text-coral transition-colors">How we think</a>
-        <a href="#trust" className="hover:text-coral transition-colors">How it works</a>
-        <a href="#contact" className="hover:text-coral transition-colors">Get in</a>
-        {user && (
-          <Link to="/dashboard" className="hover:text-coral transition-colors">Dashboard</Link>
-        )}
-      </div>
-      <div className="hidden md:flex items-center gap-4">
-        {user ? (
-          <div className="flex items-center gap-3">
-            <Link
-              to="/dashboard"
-              className="inline-flex items-center gap-2 rounded-full border border-ink/20 bg-cream px-5 py-2.5 text-sm font-semibold text-ink hover:bg-ink hover:text-cream transition-colors"
-            >
-              Dashboard
-            </Link>
-            <button
-              onClick={logout}
-              className="inline-flex items-center gap-2 rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-cream hover:bg-coral transition-colors cursor-pointer"
-            >
-              Sign Out
-            </button>
-          </div>
-        ) : (
-          <div className="flex gap-2">
-            <button
-              onClick={() => onOpenAuth("login")}
-              className="inline-flex items-center gap-2 rounded-full border border-ink/20 bg-cream px-5 py-2.5 text-sm font-semibold text-ink hover:bg-ink hover:text-cream transition-colors cursor-pointer"
-            >
-              Sign In
-            </button>
-            <button
-              onClick={() => onOpenAuth("signup")}
-              className="inline-flex items-center gap-2 rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-cream hover:bg-coral transition-colors cursor-pointer"
-            >
-              Sign Up
-            </button>
-          </div>
-        )}
-      </div>
+    <header className="fixed top-0 left-0 right-0 z-50 px-4">
+      <nav className="mx-auto mt-4 flex max-w-7xl items-center justify-between rounded-full border-2 border-ink bg-cream px-6 py-3 shadow-[4px_4px_0_0_var(--ink)]">
+        <a href="#" className="flex items-center gap-2">
+          <img src={logoAssetOffice} alt="The Asset Office Logo" className="h-7 w-auto object-contain" />
+          <span className="font-display text-lg font-semibold tracking-tight text-ink">The Asset Office</span>
+        </a>
+        <div className="hidden items-center gap-8 md:flex text-sm font-bold text-ink">
+          <a href="#philosophy" className="hover:text-coral transition-colors">How we think</a>
+          <a href="#trust" className="hover:text-coral transition-colors">How it works</a>
+          <a href="#contact" className="hover:text-coral transition-colors">Get in</a>
+          {user && (
+            <Link to="/dashboard" className="hover:text-coral transition-colors">Dashboard</Link>
+          )}
+        </div>
+        <div className="hidden md:flex items-center gap-4">
+          {user ? (
+            <div className="flex items-center gap-3">
+              <Link
+                to="/dashboard"
+                className="flex items-center gap-1.5 text-xs text-ink/75 hover:text-cream bg-cream hover:bg-coral border-2 border-ink rounded-full px-4 py-1.5 transition cursor-pointer font-bold shadow-[2px_2px_0_0_var(--ink)]"
+              >
+                Dashboard
+              </Link>
+              <button
+                onClick={logout}
+                className="flex items-center gap-1.5 text-xs text-cream hover:bg-coral bg-ink border-2 border-ink rounded-full px-4 py-1.5 transition cursor-pointer font-bold shadow-[2px_2px_0_0_var(--ink)]"
+              >
+                Sign Out
+              </button>
+            </div>
+          ) : (
+            <div className="flex gap-2">
+              <button
+                onClick={() => onOpenAuth("login")}
+                className="flex items-center gap-1.5 text-xs text-ink/75 hover:text-cream bg-cream hover:bg-coral border-2 border-ink rounded-full px-4 py-1.5 transition cursor-pointer font-bold shadow-[2px_2px_0_0_var(--ink)]"
+              >
+                Sign In
+              </button>
+              <button
+                onClick={() => onOpenAuth("signup")}
+                className="flex items-center gap-1.5 text-xs text-cream hover:bg-coral bg-ink border-2 border-ink rounded-full px-4 py-1.5 transition cursor-pointer font-bold shadow-[2px_2px_0_0_var(--ink)]"
+              >
+                Sign Up
+              </button>
+            </div>
+          )}
+        </div>
 
-      {/* Mobile Menu Toggle Button */}
-      <button
-        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-        className="flex md:hidden items-center justify-center p-2 rounded-full border-2 border-ink bg-cream text-ink hover:bg-coral hover:text-cream transition cursor-pointer"
-        aria-label="Toggle menu"
-      >
-        {isMobileMenuOpen ? (
-          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-            <line x1="18" y1="6" x2="6" y2="18" />
-            <line x1="6" y1="6" x2="18" y2="18" />
-          </svg>
-        ) : (
-          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-            <line x1="3" y1="12" x2="21" y2="12" />
-            <line x1="3" y1="6" x2="21" y2="6" />
-            <line x1="3" y1="18" x2="21" y2="18" />
-          </svg>
-        )}
-      </button>
+        {/* Mobile Menu Toggle Button */}
+        <button
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          className="flex md:hidden items-center justify-center p-1.5 rounded-full border-2 border-ink bg-cream text-ink hover:bg-coral hover:text-cream transition cursor-pointer"
+          aria-label="Toggle menu"
+        >
+          {isMobileMenuOpen ? (
+            <svg className="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          ) : (
+            <svg className="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+              <line x1="3" y1="12" x2="21" y2="12" />
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
+          )}
+        </button>
 
-      {/* Mobile Dropdown Menu Overlay */}
-      {isMobileMenuOpen && (
-        <div className="absolute left-6 right-6 top-20 z-50 rounded-3xl border-2 border-ink bg-cream p-6 shadow-[8px_8px_0_0_var(--ink)] md:hidden">
-          <div className="flex flex-col gap-4 text-base font-bold text-ink">
-            <a
-              href="#philosophy"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="hover:text-coral transition-colors py-2 border-b border-ink/10"
-            >
-              How we think
-            </a>
-            <a
-              href="#trust"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="hover:text-coral transition-colors py-2 border-b border-ink/10"
-            >
-              How it works
-            </a>
-            <a
-              href="#contact"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="hover:text-coral transition-colors py-2 border-b border-ink/10"
-            >
-              Get in
-            </a>
-            
-            <div className="flex flex-col gap-3 pt-2">
-              {user ? (
-                <>
-                  <Link
-                    to="/dashboard"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="w-full text-center rounded-full border-2 border-ink bg-cream px-5 py-3 text-sm font-bold text-ink hover:bg-ink hover:text-cream transition-colors"
-                  >
-                    Dashboard
-                  </Link>
-                  <button
-                    onClick={() => {
-                      logout();
-                      setIsMobileMenuOpen(false);
-                    }}
-                    className="w-full text-center rounded-full bg-ink px-5 py-3 text-sm font-bold text-cream hover:bg-coral transition-colors cursor-pointer"
-                  >
-                    Sign Out
-                  </button>
-                </>
-              ) : (
-                <>
-                  <button
-                    onClick={() => {
-                      onOpenAuth("login");
-                      setIsMobileMenuOpen(false);
-                    }}
-                    className="w-full text-center rounded-full border-2 border-ink bg-cream px-5 py-3 text-sm font-bold text-ink hover:bg-ink hover:text-cream transition-colors cursor-pointer"
-                  >
-                    Sign In
-                  </button>
-                  <button
-                    onClick={() => {
-                      onOpenAuth("signup");
-                      setIsMobileMenuOpen(false);
-                    }}
-                    className="w-full text-center rounded-full bg-ink px-5 py-3 text-sm font-bold text-cream hover:bg-coral transition-colors cursor-pointer"
-                  >
-                    Sign Up
-                  </button>
-                </>
-              )}
+        {/* Mobile Dropdown Menu Overlay */}
+        {isMobileMenuOpen && (
+          <div className="absolute left-4 right-4 top-16 z-50 rounded-3xl border-2 border-ink bg-cream p-5 shadow-[8px_8px_0_0_var(--ink)] md:hidden">
+            <div className="flex flex-col gap-3 text-sm font-bold text-ink">
+              <a
+                href="#philosophy"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="hover:text-coral transition-colors py-2 border-b border-ink/10"
+              >
+                How we think
+              </a>
+              <a
+                href="#trust"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="hover:text-coral transition-colors py-2 border-b border-ink/10"
+              >
+                How it works
+              </a>
+              <a
+                href="#contact"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="hover:text-coral transition-colors py-2 border-b border-ink/10"
+              >
+                Get in
+              </a>
+              
+              <div className="flex flex-col gap-2 pt-1">
+                {user ? (
+                  <>
+                    <Link
+                      to="/dashboard"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="w-full text-center rounded-full border-2 border-ink bg-cream py-2.5 text-xs font-bold text-ink hover:bg-ink hover:text-cream transition-colors"
+                    >
+                      Dashboard
+                    </Link>
+                    <button
+                      onClick={() => {
+                        logout();
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className="w-full text-center rounded-full bg-ink py-2.5 text-xs font-bold text-cream hover:bg-coral transition-colors cursor-pointer"
+                    >
+                      Sign Out
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      onClick={() => {
+                        onOpenAuth("login");
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className="w-full text-center rounded-full border-2 border-ink bg-cream py-2.5 text-xs font-bold text-ink hover:bg-ink hover:text-cream transition-colors cursor-pointer"
+                    >
+                      Sign In
+                    </button>
+                    <button
+                      onClick={() => {
+                        onOpenAuth("signup");
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className="w-full text-center rounded-full bg-ink py-2.5 text-xs font-bold text-cream hover:bg-coral transition-colors cursor-pointer"
+                    >
+                      Sign Up
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      )}
-    </nav>
+        )}
+      </nav>
+    </header>
   );
 }
 

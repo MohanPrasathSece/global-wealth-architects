@@ -109,7 +109,7 @@ function Dashboard() {
             </div>
             <button
               onClick={logout}
-              className="flex items-center gap-1.5 text-xs text-ink/75 hover:text-cream bg-cream hover:bg-coral border-2 border-ink rounded-full px-4 py-1.5 transition cursor-pointer font-bold shadow-[2px_2px_0_0_var(--ink)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[0_0_0_0_var(--ink)]"
+              className="flex items-center gap-1.5 text-xs text-cream hover:bg-coral bg-ink border-2 border-ink rounded-full px-4 py-1.5 transition cursor-pointer font-bold shadow-[2px_2px_0_0_var(--ink)]"
             >
               <LogOut className="h-3.5 w-3.5" />
               <span>Log out</span>
