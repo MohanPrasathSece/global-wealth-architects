@@ -125,10 +125,10 @@ function Dashboard() {
             <Sparkles className="h-3.5 w-3.5 text-coral" /> Command Center
           </div>
           <h1 className="font-display text-4xl md:text-6xl font-bold text-ink leading-tight">
-            Welcome back, <span className="italic text-coral">{user.name}</span>
+            Your terminal is live, <span className="italic text-coral">{user.name}</span>
           </h1>
           <p className="mt-4 text-ink/70 max-w-xl mx-auto text-base leading-relaxed">
-            Your wealth command center is active. Monitor your allocations, review algorithmic yield generation, and submit custom requests to build long-term digital asset portfolios.
+            No speculative gambling, no sleepless nights. Monitor your cold custody, adjust allocations, and guard your wealth with unbreakable security.
           </p>
         </ScrollSection>
 
@@ -140,10 +140,10 @@ function Dashboard() {
                 01 · Smart Staking
               </div>
               <h2 className="font-display text-3xl md:text-5xl font-semibold leading-tight text-ink">
-                How We <span className="italic text-coral">Grow Your Capital</span>
+                Relentless <span className="italic text-coral">compounding</span>. Zero trading.
               </h2>
               <p className="text-ink/70 leading-relaxed">
-                We believe in simple, transparent wealth generation. Instead of speculative trading, The Asset Office allocates your assets into verified node networks and liquidity pools that compound consistent returns.
+                We do not speculate. We route your capital to audited node networks, validators, and delta-neutral liquidity vaults that print consistent yield under lock and key.
               </p>
               <div className="space-y-4">
                 {[
@@ -189,7 +189,7 @@ function Dashboard() {
               Why Your <span className="italic text-cobalt">Money is Safe</span>
             </h2>
             <p className="text-ink/70 max-w-xl mx-auto">
-              Our absolute priority is the defense of your capital. We implement multiple automated and architectural layers to neutralize volatility.
+              Your capital is protected by institutional multi-party computation vaults, absolute hedging models, and automated volatility stop-locks.
             </p>
           </div>
 
@@ -244,10 +244,10 @@ function Dashboard() {
                 03 · Yield Harvesting
               </div>
               <h2 className="font-display text-3xl md:text-5xl font-semibold leading-tight text-ink">
-                Live Yield <span className="italic text-cobalt">Tracking</span>
+                Live Compound <span className="italic text-cobalt">Streams</span>
               </h2>
               <p className="text-ink/70 leading-relaxed">
-                Watch rewards accrue in real time. The Asset Office's proprietary yield streams display automated compounding events, REST yields, and arbitrage captures across decentralized markets as they happen.
+                Watch your balance print rewards. Monitor live network fees, staking yield, and arbitrage captures compounding into your secure vault.
               </p>
             </div>
           </div>
@@ -260,10 +260,10 @@ function Dashboard() {
               04 · Consultation Desk
             </div>
             <h2 className="font-display text-3xl md:text-5xl font-semibold leading-tight text-ink">
-              Consultation <span className="italic text-coral">Desk</span>
+              Secure Allocation <span className="italic text-coral">Desk</span>
             </h2>
             <p className="text-ink/70 max-w-lg mx-auto">
-              Want a customized allocation setup or specialized yield lock-ins? Submit your goals below and our desk will respond in 24 hours.
+              Need a custom high-conviction blueprint or bespoke vaults? Submit your goals and our desk will align with you in 24 hours.
             </p>
           </div>
 

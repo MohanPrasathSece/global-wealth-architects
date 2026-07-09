@@ -29,6 +29,7 @@ export const AuthModals: React.FC<AuthModalsProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [alreadyExists, setAlreadyExists] = useState(false);
+  const [notRegistered, setNotRegistered] = useState(false);
 
   const [validationErrors, setValidationErrors] = useState<{
     name?: string;
@@ -44,6 +45,7 @@ export const AuthModals: React.FC<AuthModalsProps> = ({
     setError(null);
     setSuccess(null);
     setAlreadyExists(false);
+    setNotRegistered(false);
     setEmail("");
     setName("");
     setPhone("");
@@ -98,6 +100,7 @@ export const AuthModals: React.FC<AuthModalsProps> = ({
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setNotRegistered(false);
     const emailErr = validateEmail(email);
     if (emailErr) { setValidationErrors({ email: emailErr }); return; }
     setLoading(true);
@@ -106,6 +109,8 @@ export const AuthModals: React.FC<AuthModalsProps> = ({
     if (res.success) {
       setSuccess("Welcome back!");
       setTimeout(() => { handleClose(); if (onSuccess) onSuccess(); }, 800);
+    } else if (res.code === "NOT_FOUND") {
+      setNotRegistered(true);
     } else {
       setError(res.error || "Login failed. Please try again.");
     }
@@ -202,6 +207,27 @@ export const AuthModals: React.FC<AuthModalsProps> = ({
                   />
                   {errText(validationErrors.email)}
                 </div>
+
+                {notRegistered && (
+                  <div className="rounded-2xl border-2 border-ink bg-blush p-4 text-sm leading-relaxed text-ink">
+                    <p className="font-bold text-coral mb-0.5">⚠️ Account not found</p>
+                    <p className="text-ink/80 break-all mb-2">
+                      <span className="font-mono text-ink/90 font-bold">{email}</span> is not registered yet.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setNotRegistered(false);
+                        setError(null);
+                        setValidationErrors({});
+                        setView("signup");
+                      }}
+                      className="inline-flex items-center gap-1.5 rounded-full bg-ink px-4 py-2 text-xs font-semibold text-cream hover:bg-coral transition-colors cursor-pointer"
+                    >
+                      → Sign Up instead
+                    </button>
+                  </div>
+                )}
 
                 {error && (
                   <div className="rounded-2xl border-2 border-coral bg-coral/10 px-4 py-3 text-sm text-coral leading-relaxed font-semibold">
