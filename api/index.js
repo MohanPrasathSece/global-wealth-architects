@@ -17,6 +17,43 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const UPLOAD_DIR = path.join("/tmp", "uploads");
 
+// Phone formatting for CRM (must be in 00XX format, not +XX)
+const DIAL_CODES = {
+  CH: "41", US: "1", GB: "44", DE: "49", IN: "91", FR: "33",
+  BE: "32", IT: "39", ES: "34", NL: "31", AT: "43", SE: "46",
+  AU: "61", CA: "1", JP: "81", SG: "65", AE: "971", HK: "852",
+  BR: "55", MX: "52", ZA: "27", NZ: "64", IE: "353", PT: "351",
+  NO: "47", DK: "45", FI: "358", PL: "48", CZ: "420", RO: "40",
+  HU: "36", GR: "30", TR: "90", IL: "972", SA: "966", KR: "82",
+  TW: "886", TH: "66", MY: "60", PH: "63", ID: "62", VN: "84",
+  CL: "56", CO: "57", AR: "54", PE: "51"
+};
+
+function formatPhoneForCRM(phoneInput, countryCode = "CH") {
+  let phone = (phoneInput || "").replace(/[^\d+]/g, "").trim();
+  const upperCountry = countryCode.toUpperCase();
+  const code = DIAL_CODES[upperCountry] || "41";
+
+  if (phone) {
+    if (phone.startsWith("+")) {
+      phone = "00" + phone.slice(1);
+    }
+    if (phone.startsWith(code) && !phone.startsWith("00" + code)) {
+      phone = "00" + phone;
+    }
+    if (phone.startsWith("0") && !phone.startsWith("00")) {
+      phone = "00" + code + phone.slice(1);
+    }
+    if (!phone.startsWith("00")) {
+      phone = "00" + code + phone;
+    }
+  } else {
+    phone = "0000000000";
+  }
+
+  return phone;
+}
+
 // Ensure upload directory exists
 if (!fs.existsSync(UPLOAD_DIR)) {
   fs.mkdirSync(UPLOAD_DIR, { recursive: true });
@@ -204,7 +241,7 @@ app.post("/api/signup", async (req, res) => {
       const payload = {
         country_name: (countryCode || "ch").toLowerCase(),
         description: "Signup Lead",
-        phone: phone || "",
+        phone: formatPhoneForCRM(phone, countryCode),
         email: email.toLowerCase().trim(),
         first_name,
         last_name,
@@ -313,16 +350,15 @@ app.post("/api/contact", async (req, res) => {
 
     const payload = {
       country_name: (countryCode || "ch").toLowerCase(),
-      description: message || "Signup Lead",
-      phone: phone || "",
+      description: message || "Contact Lead",
+      phone: formatPhoneForCRM(phone, countryCode),
       email: email.toLowerCase().trim(),
       first_name,
       last_name,
       custom_fields: {
         Source_ID: "website",
         How_Much_Invested: "0",
-        Outline_Your_Case: message || "",
-        file_url: fileUrl || ""
+        Outline_Your_Case: message || ""
       }
     };
 
