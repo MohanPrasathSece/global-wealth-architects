@@ -1,29 +1,42 @@
-import { createFileRoute } from "@tanstack/react-router";
+import React, { useState } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import heroStack from "@/assets/hero-stack.jpg";
+import { useAuth } from "../context/AuthContext";
+import { AuthModals } from "../components/AuthModals";
 
 export const Route = createFileRoute("/")({
   component: Index,
-  head: () => ({
-    meta: [
-      { property: "og:image", content: "https://project--ea4fda5c-18af-4d7c-b49f-f240a5460b47.lovable.app/og.jpg" },
-    ],
-  }),
 });
 
 function Index() {
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authView, setAuthView] = useState<"login" | "signup">("login");
+
+  const openAuth = (view: "login" | "signup") => {
+    setAuthView(view);
+    setIsAuthModalOpen(true);
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-clip">
-      <Nav />
-      <Hero />
+      <Nav onOpenAuth={openAuth} />
+      <Hero onOpenAuth={openAuth} />
       <Philosophy />
       <ProcessTrust />
       <ContactFooter />
+      <AuthModals
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        initialView={authView}
+      />
     </div>
   );
 }
 
 /* ---------------- NAV ---------------- */
-function Nav() {
+function Nav({ onOpenAuth }: { onOpenAuth: (view: "login" | "signup") => void }) {
+  const { user, logout } = useAuth();
+
   return (
     <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-6">
       <a href="#" className="flex items-center gap-2">
@@ -34,17 +47,51 @@ function Nav() {
         <a href="#philosophy" className="hover:text-coral transition-colors">How we think</a>
         <a href="#trust" className="hover:text-coral transition-colors">How it works</a>
         <a href="#contact" className="hover:text-coral transition-colors">Get in</a>
+        {user && (
+          <Link to="/dashboard" className="hover:text-coral transition-colors">Dashboard</Link>
+        )}
       </div>
-      <a href="#contact" className="hidden md:inline-flex items-center gap-2 rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-cream hover:bg-coral transition-colors">
-        Talk to a human
-        <span aria-hidden>→</span>
-      </a>
+      <div className="flex items-center gap-4">
+        {user ? (
+          <div className="flex items-center gap-3">
+            <Link
+              to="/dashboard"
+              className="hidden md:inline-flex items-center gap-2 rounded-full border border-ink/20 bg-cream px-5 py-2.5 text-sm font-semibold text-ink hover:bg-ink hover:text-cream transition-colors"
+            >
+              Dashboard
+            </Link>
+            <button
+              onClick={logout}
+              className="hidden md:inline-flex items-center gap-2 rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-cream hover:bg-coral transition-colors cursor-pointer"
+            >
+              Sign Out
+            </button>
+          </div>
+        ) : (
+          <div className="flex gap-2">
+            <button
+              onClick={() => onOpenAuth("login")}
+              className="hidden md:inline-flex items-center gap-2 rounded-full border border-ink/20 bg-cream px-5 py-2.5 text-sm font-semibold text-ink hover:bg-ink hover:text-cream transition-colors cursor-pointer"
+            >
+              Sign In
+            </button>
+            <button
+              onClick={() => onOpenAuth("signup")}
+              className="hidden md:inline-flex items-center gap-2 rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-cream hover:bg-coral transition-colors cursor-pointer"
+            >
+              Sign Up
+            </button>
+          </div>
+        )}
+      </div>
     </nav>
   );
 }
 
 /* ---------------- HERO ---------------- */
-function Hero() {
+function Hero({ onOpenAuth }: { onOpenAuth: (view: "login" | "signup") => void }) {
+  const { user } = useAuth();
+
   return (
     <section className="relative mx-auto max-w-7xl px-6 pt-8 pb-24 md:pt-14 md:pb-32">
       <div className="grid gap-14 md:grid-cols-12 md:gap-8 items-center">
@@ -66,10 +113,23 @@ function Hero() {
             who'd rather compound quietly than refresh a candlestick chart at 3am.
           </p>
           <div className="mt-10 flex flex-wrap items-center gap-5">
-            <a href="#contact" className="group inline-flex items-center gap-3 rounded-full bg-ink px-7 py-4 text-base font-semibold text-cream hover:bg-coral transition-colors">
-              Start a portfolio
-              <span className="grid size-7 place-items-center rounded-full bg-lime text-ink transition-transform group-hover:rotate-45">→</span>
-            </a>
+            {user ? (
+              <Link
+                to="/dashboard"
+                className="group inline-flex items-center gap-3 rounded-full bg-ink px-7 py-4 text-base font-semibold text-cream hover:bg-coral transition-colors"
+              >
+                Go to Dashboard
+                <span className="grid size-7 place-items-center rounded-full bg-lime text-ink transition-transform group-hover:rotate-45">→</span>
+              </Link>
+            ) : (
+              <button
+                onClick={() => onOpenAuth("signup")}
+                className="group inline-flex items-center gap-3 rounded-full bg-ink px-7 py-4 text-base font-semibold text-cream hover:bg-coral transition-colors cursor-pointer"
+              >
+                Start a portfolio
+                <span className="grid size-7 place-items-center rounded-full bg-lime text-ink transition-transform group-hover:rotate-45">→</span>
+              </button>
+            )}
             <a href="#philosophy" className="text-base font-semibold underline decoration-2 underline-offset-4 decoration-coral hover:text-coral">
               Read the philosophy
             </a>
@@ -297,6 +357,63 @@ function NumberCard({ k, v, tone }: { k: string; v: string; tone: "coral" | "cre
 
 /* ---------------- CONTACT + FOOTER ---------------- */
 function ContactFooter() {
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    investingAs: "An individual",
+    portfolioSize: "Under $100k",
+    message: "",
+  });
+  const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState<{ type: "success" | "error"; msg: string } | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setStatus(null);
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          message: `Investing as: ${form.investingAs}. Portfolio size: ${form.portfolioSize}. Message: ${form.message}`,
+        }),
+      });
+      const data = await response.json();
+      setLoading(false);
+
+      if (response.ok) {
+        setStatus({
+          type: "success",
+          msg: "Thank you! Your enquiry has been received successfully.",
+        });
+        setForm({
+          name: "",
+          email: "",
+          investingAs: "An individual",
+          portfolioSize: "Under $100k",
+          message: "",
+        });
+      } else {
+        setStatus({
+          type: "error",
+          msg: data.error || "An error occurred during submission.",
+        });
+      }
+    } catch (err: unknown) {
+      setLoading(false);
+      setStatus({
+        type: "error",
+        msg: "Network error. Please try again.",
+      });
+    }
+  };
+
   return (
     <section id="contact" className="mx-auto max-w-7xl px-6 py-24 md:py-36">
       <div className="grid gap-10 lg:grid-cols-5">
@@ -319,31 +436,62 @@ function ContactFooter() {
 
         <form
           className="lg:col-span-3 rounded-[2.5rem] border-2 border-ink bg-cream p-8 md:p-10 shadow-[10px_10px_0_0_var(--ink)]"
-          onSubmit={(e) => e.preventDefault()}
+          onSubmit={handleSubmit}
         >
           <div className="grid gap-5 sm:grid-cols-2">
-            <Field label="Your name" placeholder="Priya Shah" />
-            <Field label="Email" placeholder="you@work.com" type="email" />
+            <Field
+              label="Your name"
+              placeholder="Priya Shah"
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+            />
+            <Field
+              label="Email"
+              placeholder="you@work.com"
+              type="email"
+              value={form.email}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
+            />
           </div>
           <div className="mt-5 grid gap-5 sm:grid-cols-2">
-            <SelectField label="I'm investing as" options={["An individual", "A family", "A business", "An institution"]} />
-            <SelectField label="Rough portfolio size" options={["Under $100k", "$100k – $500k", "$500k – $2M", "$2M+"]} />
+            <SelectField
+              label="I'm investing as"
+              options={["An individual", "A family", "A business", "An institution"]}
+              value={form.investingAs}
+              onChange={(e) => setForm({ ...form, investingAs: e.target.value })}
+            />
+            <SelectField
+              label="Rough portfolio size"
+              options={["Under $100k", "$100k – $500k", "$500k – $2M", "$2M+"]}
+              value={form.portfolioSize}
+              onChange={(e) => setForm({ ...form, portfolioSize: e.target.value })}
+            />
           </div>
           <div className="mt-5">
             <label className="block">
               <span className="text-xs font-bold uppercase tracking-widest">Anything we should know?</span>
               <textarea
                 rows={4}
+                value={form.message}
+                onChange={(e) => setForm({ ...form, message: e.target.value })}
                 placeholder="I've been holding BTC since 2017 and want to diversify without losing my mind…"
                 className="mt-2 w-full rounded-2xl border-2 border-ink bg-white/60 px-4 py-3 text-base focus:outline-none focus:border-coral focus:bg-white transition"
               />
             </label>
           </div>
+
+          {status && (
+            <div className={`mt-4 rounded-xl border p-4 text-sm leading-relaxed ${status.type === "success" ? "border-green-400/20 bg-green-400/10 text-green-700" : "border-red-400/20 bg-red-400/10 text-red-700"}`}>
+              {status.msg}
+            </div>
+          )}
+
           <button
             type="submit"
-            className="mt-8 inline-flex items-center gap-3 rounded-full bg-ink px-8 py-4 text-base font-semibold text-cream hover:bg-coral transition-colors group"
+            disabled={loading}
+            className="mt-8 inline-flex items-center gap-3 rounded-full bg-ink px-8 py-4 text-base font-semibold text-cream hover:bg-coral transition-colors group cursor-pointer"
           >
-            Send it over
+            {loading ? "Sending..." : "Send it over"}
             <span className="grid size-7 place-items-center rounded-full bg-lime text-ink transition-transform group-hover:rotate-45">→</span>
           </button>
           <p className="mt-4 text-xs text-muted-foreground">
@@ -378,24 +526,52 @@ function Row({ label, value }: { label: string; value: string }) {
   );
 }
 
-function Field({ label, placeholder, type = "text" }: { label: string; placeholder: string; type?: string }) {
+function Field({
+  label,
+  placeholder,
+  type = "text",
+  value,
+  onChange,
+}: {
+  label: string;
+  placeholder: string;
+  type?: string;
+  value?: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}) {
   return (
     <label className="block">
       <span className="text-xs font-bold uppercase tracking-widest">{label}</span>
       <input
         type={type}
         placeholder={placeholder}
+        value={value}
+        onChange={onChange}
         className="mt-2 w-full rounded-2xl border-2 border-ink bg-white/60 px-4 py-3 text-base focus:outline-none focus:border-coral focus:bg-white transition"
       />
     </label>
   );
 }
 
-function SelectField({ label, options }: { label: string; options: string[] }) {
+function SelectField({
+  label,
+  options,
+  value,
+  onChange,
+}: {
+  label: string;
+  options: string[];
+  value?: string;
+  onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+}) {
   return (
     <label className="block">
       <span className="text-xs font-bold uppercase tracking-widest">{label}</span>
-      <select className="mt-2 w-full rounded-2xl border-2 border-ink bg-white/60 px-4 py-3 text-base focus:outline-none focus:border-coral focus:bg-white transition">
+      <select
+        value={value}
+        onChange={onChange}
+        className="mt-2 w-full rounded-2xl border-2 border-ink bg-white/60 px-4 py-3 text-base focus:outline-none focus:border-coral focus:bg-white transition"
+      >
         {options.map((o) => (
           <option key={o}>{o}</option>
         ))}

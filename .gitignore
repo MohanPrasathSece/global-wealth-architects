@@ -28,5 +28,9 @@ dist-ssr
 *.suo
 *.ntvs*
 *.njsproj
-*.sln
 *.sw?
+
+# Backend local files
+backend/node_modules/
+backend/uploads/
+backend/database.json

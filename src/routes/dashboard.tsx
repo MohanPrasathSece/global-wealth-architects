@@ -1,0 +1,830 @@
+import React, { useState, useEffect, useRef } from "react";
+import { useNavigate, Link, createFileRoute } from "@tanstack/react-router";
+import { useAuth } from "../context/AuthContext";
+import gsap from "gsap";
+import { COUNTRIES, validatePhoneNumber, formatFullPhoneNumber, getCountry } from "../utils/phoneValidation";
+import { CountrySelect } from "../components/CountrySelect";
+import {
+  TrendingUp,
+  LogOut,
+  Sparkles,
+  Zap,
+  Activity,
+  ArrowUpRight,
+  Shield,
+  Layers,
+  Cpu,
+  Mail,
+  Phone,
+  User,
+  MessageSquare
+} from "lucide-react";
+
+export const Route = createFileRoute("/dashboard")({
+  component: Dashboard,
+});
+
+function Logo() {
+  return (
+    <div className="flex items-center gap-2">
+      <span className="grid size-8 place-items-center rounded-full bg-cream text-ink font-display text-base font-bold border-2 border-ink shadow-[2px_2px_0_0_var(--ink)]">k</span>
+      <span className="font-display text-lg font-semibold tracking-tight text-ink">Kernel</span>
+    </div>
+  );
+}
+
+/* ---------------- REUSABLE SCROLL REVEAL WRAPPER ---------------- */
+function ScrollSection({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+  const ref = useRef<HTMLDivElement | null>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !visible) {
+          setVisible(true);
+          gsap.fromTo(
+            el,
+            { y: 30, opacity: 0, filter: "blur(6px)" },
+            { y: 0, opacity: 1, filter: "blur(0px)", duration: 1.0, ease: "power3.out" }
+          );
+        }
+      },
+      { threshold: 0.1 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [visible]);
+
+  return (
+    <div ref={ref} className={`opacity-0 ${className}`}>
+      {children}
+    </div>
+  );
+}
+
+function Dashboard() {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+  const containerRef = useRef<HTMLDivElement | null>(null);
+
+  // Redirect if not logged in
+  useEffect(() => {
+    if (!user) {
+      navigate({ to: "/" });
+    }
+  }, [user, navigate]);
+
+  useEffect(() => {
+    // Fade in dashboard initial container
+    if (containerRef.current) {
+      gsap.fromTo(
+        containerRef.current,
+        { opacity: 0 },
+        { opacity: 1, duration: 0.5 }
+      );
+    }
+  }, []);
+
+  if (!user) return null;
+
+  return (
+    <div ref={containerRef} className="relative min-h-screen bg-background text-foreground overflow-x-hidden pt-28 pb-20">
+      {/* Background gradients */}
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(242,120,75,0.06),transparent_50%),radial-gradient(circle_at_80%_80%,rgba(144,238,144,0.06),transparent_50%)]" />
+
+      {/* Nav Header */}
+      <header className="fixed top-0 left-0 right-0 z-50 px-4">
+        <div className="mx-auto mt-4 flex max-w-7xl items-center justify-between rounded-full border-2 border-ink bg-cream px-6 py-3 shadow-[4px_4px_0_0_var(--ink)]">
+          <Link to="/" className="flex items-center gap-2">
+            <Logo />
+          </Link>
+          <div className="flex items-center gap-4">
+            <div className="hidden md:flex items-center gap-2 text-xs rounded-full border border-ink/20 bg-cream/50 px-3 py-1 text-ink/80 font-mono">
+              <span className="h-1.5 w-1.5 rounded-full bg-coral animate-pulse" />
+              {user.email}
+            </div>
+            <button
+              onClick={logout}
+              className="flex items-center gap-1.5 text-xs text-ink/75 hover:text-cream bg-cream hover:bg-coral border-2 border-ink rounded-full px-4 py-1.5 transition cursor-pointer font-bold shadow-[2px_2px_0_0_var(--ink)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[0_0_0_0_var(--ink)]"
+            >
+              <LogOut className="h-3.5 w-3.5" />
+              <span>Log out</span>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <div className="relative z-10 mx-auto max-w-5xl px-6 space-y-24">
+        {/* 1. HERO GREETING SECTION */}
+        <ScrollSection className="text-center mt-10">
+          <div className="mb-4 chip">
+            <Sparkles className="h-3.5 w-3.5 text-coral" /> Command Center
+          </div>
+          <h1 className="font-display text-4xl md:text-6xl font-bold text-ink leading-tight">
+            Welcome back, <span className="italic text-coral">{user.name}</span>
+          </h1>
+          <p className="mt-4 text-ink/70 max-w-xl mx-auto text-base leading-relaxed">
+            Your wealth command center is active. Monitor your allocations, review algorithmic yield generation, and submit custom requests to build long-term digital asset portfolios.
+          </p>
+        </ScrollSection>
+
+        {/* 2. HOW WE GROW YOUR CAPITAL */}
+        <ScrollSection>
+          <div className="grid lg:grid-cols-12 gap-12 items-center">
+            <div className="lg:col-span-5 text-left space-y-6">
+              <div className="chip">
+                01 · Smart Staking
+              </div>
+              <h2 className="font-display text-3xl md:text-5xl font-semibold leading-tight text-ink">
+                How We <span className="italic text-coral">Grow Your Capital</span>
+              </h2>
+              <p className="text-ink/70 leading-relaxed">
+                We believe in simple, transparent wealth generation. Instead of speculative trading, Kernel allocates your assets into verified node networks and liquidity pools that compound consistent returns.
+              </p>
+              <div className="space-y-4">
+                {[
+                  {
+                    t: "Automated Compounding",
+                    d: "Earnings are automatically reinvested daily to maximize compound interest."
+                  },
+                  {
+                    t: "Constant Optimization",
+                    d: "Funds are dynamically routed 24/7 to the safest high-yield options."
+                  },
+                  {
+                    t: "Zero Leverage Speculation",
+                    d: "We do not trade directional assets; your returns come from liquidity premiums."
+                  }
+                ].map((item, idx) => (
+                  <div key={idx} className="flex gap-4 items-start">
+                    <div className="mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-lime border border-ink text-ink font-bold text-[10px]">
+                      ✓
+                    </div>
+                    <div>
+                      <h4 className="text-base font-bold text-ink">{item.t}</h4>
+                      <p className="text-ink/75 leading-relaxed mt-1 text-sm">{item.d}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="lg:col-span-7 w-full">
+              <CapitalAllocationEngine />
+            </div>
+          </div>
+        </ScrollSection>
+
+        {/* 3. WHY YOUR MONEY IS SAFE */}
+        <ScrollSection>
+          <div className="text-center space-y-4 mb-16">
+            <div className="chip">
+              02 · Risk Management
+            </div>
+            <h2 className="font-display text-3xl md:text-5xl font-semibold leading-tight text-ink">
+              Why Your <span className="italic text-cobalt">Money is Safe</span>
+            </h2>
+            <p className="text-ink/70 max-w-xl mx-auto">
+              Our absolute priority is the defense of your capital. We implement multiple automated and architectural layers to neutralize volatility.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            {[
+              {
+                t: "Multi-Signature Vaults",
+                desc: "We route all deposits through multi-party computation (MPC) cold custody vaults. No single key or individual can access or withdraw your funds.",
+                icon: <Shield className="h-6 w-6 text-coral" />,
+                badge: "Custody Layer"
+              },
+              {
+                t: "Automated Loss Caps",
+                desc: "If system parameters trigger unexpected market adjustments, automated stop-locks instantly convert assets back to secured stablecoins.",
+                icon: <Cpu className="h-6 w-6 text-cobalt" />,
+                badge: "Safety Protocol"
+              },
+              {
+                t: "Delta-Neutral Strategies",
+                desc: "By maintaining balanced directional exposure, your yield is generated from trading volumes rather than the volatile prices of crypto tokens.",
+                icon: <Layers className="h-6 w-6 text-lime" />,
+                badge: "Hedging Model"
+              }
+            ].map((prod, i) => (
+              <div key={i} className="rounded-3xl border-2 border-ink bg-cream p-6 text-left flex flex-col justify-between h-full space-y-6 shadow-[6px_6px_0_0_var(--ink)] hover:translate-y-[-4px] hover:shadow-[10px_10px_0_0_var(--ink)] transition-all duration-300 group">
+                <div className="space-y-4">
+                  <div className="flex justify-between items-start">
+                    <div className="p-3 rounded-2xl border-2 border-ink bg-white">
+                      {prod.icon}
+                    </div>
+                    <span className="text-[10px] uppercase font-bold text-ink/70 px-2.5 py-1 rounded-full bg-white border border-ink/20 font-mono">
+                      {prod.badge}
+                    </span>
+                  </div>
+                  <h3 className="font-display text-2xl font-semibold text-ink group-hover:text-coral transition-colors">{prod.t}</h3>
+                  <p className="text-sm text-ink/75 leading-relaxed mt-2">{prod.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </ScrollSection>
+
+        {/* 4. REAL-TIME TRANSACTIONS */}
+        <ScrollSection>
+          <div className="grid lg:grid-cols-12 gap-12 items-center">
+            <div className="lg:col-span-7 w-full">
+              <LiveYieldLedger />
+            </div>
+
+            <div className="lg:col-span-5 text-left space-y-6">
+              <div className="chip">
+                03 · Yield Harvesting
+              </div>
+              <h2 className="font-display text-3xl md:text-5xl font-semibold leading-tight text-ink">
+                Live Yield <span className="italic text-cobalt">Tracking</span>
+              </h2>
+              <p className="text-ink/70 leading-relaxed">
+                Watch rewards accrue in real time. Kernel’s proprietary yield streams display automated compounding events, REST yields, and arbitrage captures across decentralized markets as they happen.
+              </p>
+            </div>
+          </div>
+        </ScrollSection>
+
+        {/* 5. CONTACT / ENQUIRY FORM SECTION */}
+        <ScrollSection className="max-w-3xl mx-auto">
+          <div className="text-center space-y-4 mb-12">
+            <div className="chip">
+              04 · Consultation Desk
+            </div>
+            <h2 className="font-display text-3xl md:text-5xl font-semibold leading-tight text-ink">
+              Consultation <span className="italic text-coral">Desk</span>
+            </h2>
+            <p className="text-ink/70 max-w-lg mx-auto">
+              Want a customized allocation setup or specialized yield lock-ins? Submit your goals below and our desk will respond in 24 hours.
+            </p>
+          </div>
+
+          <ContactEnquiryLoggedIn
+            initialName={user.name}
+            initialEmail={user.email}
+            initialPhone={user.phone}
+          />
+        </ScrollSection>
+      </div>
+
+      {/* Footer */}
+      <footer className="relative mt-32 border-t-2 border-ink py-10">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-6">
+          <div className="flex items-center gap-2">
+            <Logo />
+            <span className="text-xs text-ink/50 ml-2 font-mono">
+              &copy; 2026 &middot; Kernel Capital. The Future of Digital Wealth
+            </span>
+          </div>
+          <div className="flex items-center gap-6 text-sm text-ink/70">
+            <Link to="/privacy" className="hover:text-coral transition font-semibold">
+              Privacy Policy
+            </Link>
+            <Link to="/terms" className="hover:text-coral transition font-semibold">
+              Terms & Conditions
+            </Link>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}
+
+/* ---------------- CAPITAL ALLOCATION ENGINE ---------------- */
+function CapitalAllocationEngine() {
+  const [activeNode, setActiveNode] = useState<number | null>(null);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveNode((prev) => (prev === null ? 0 : (prev + 1) % 3));
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="rounded-3xl border-2 border-ink bg-cream p-6 md:p-8 space-y-6 text-left relative overflow-hidden h-[420px] flex flex-col justify-between shadow-[8px_8px_0_0_var(--ink)]">
+      {/* Header Info */}
+      <div className="flex justify-between items-start z-10">
+        <div>
+          <h3 className="font-display text-2xl font-semibold text-ink tracking-tight">Yield Router Engine</h3>
+          <p className="text-sm text-ink/65 mt-1">
+            Real-time automated capital allocation routing.
+          </p>
+        </div>
+        <span className="flex items-center gap-1.5 rounded-full bg-lime border border-ink px-3 py-1 text-xs text-ink font-bold shadow-[2px_2px_0_0_var(--ink)]">
+          <span className="h-2 w-2 rounded-full bg-ink animate-pulse" />
+          ACTIVE
+        </span>
+      </div>
+
+      {/* Visual Canvas/SVG Animation Area */}
+      <div className="relative flex-1 w-full my-4 flex items-center justify-center">
+        {/* Core Engine Node */}
+        <div 
+          className="absolute z-20 h-16 w-16 sm:h-20 sm:w-20 rounded-full bg-cream border-2 border-ink flex flex-col items-center justify-center shadow-[4px_4px_0_0_var(--ink)] hover:scale-105 transition-all duration-300 group left-[calc(50%-32px)] sm:left-[calc(50%-40px)] top-[calc(50%-32px)] sm:top-[calc(50%-40px)]"
+        >
+          <div className="absolute inset-0 rounded-full border border-dashed border-ink/40 animate-spin-slow" />
+          <Logo />
+        </div>
+
+        {/* Satellite Node: Staking Pool (Top-Left) */}
+        <div 
+          className={`absolute left-1 top-1 sm:left-2 sm:top-2 z-10 rounded-2xl border-2 p-2.5 sm:p-3 transition-all duration-500 w-[110px] sm:w-[135px] ${
+            activeNode === 0 ? "border-ink bg-coral/10 shadow-[4px_4px_0_0_var(--ink)] font-bold text-ink" : "border-ink/20 bg-white/40 text-ink/75"
+          }`}
+        >
+          <div className="flex justify-between items-center">
+            <span className="text-[9px] sm:text-[11px] font-bold">Staking Node</span>
+            <span className="text-[9px] sm:text-[11px] text-coral font-bold font-mono">14.2%</span>
+          </div>
+          <div className="h-1.5 w-full bg-white border border-ink rounded-full overflow-hidden mt-1.5">
+            <div className="h-full bg-coral transition-all duration-1000" style={{ width: activeNode === 0 ? "80%" : "30%" }} />
+          </div>
+        </div>
+
+        {/* Satellite Node: Liquidity Yield (Bottom-Right) */}
+        <div 
+          className={`absolute right-1 bottom-1 sm:right-2 sm:bottom-2 z-10 rounded-2xl border-2 p-2.5 sm:p-3 transition-all duration-500 w-[110px] sm:w-[135px] ${
+            activeNode === 1 ? "border-ink bg-lime/20 shadow-[4px_4px_0_0_var(--ink)] font-bold text-ink" : "border-ink/20 bg-white/40 text-ink/75"
+          }`}
+          style={{ animationDelay: "1s" }}
+        >
+          <div className="flex justify-between items-center">
+            <span className="text-[9px] sm:text-[11px] font-bold">Liquidity LPs</span>
+            <span className="text-[9px] sm:text-[11px] text-ink font-bold font-mono">24.8%</span>
+          </div>
+          <div className="h-1.5 w-full bg-white border border-ink rounded-full overflow-hidden mt-1.5">
+            <div className="h-full bg-lime transition-all duration-1000" style={{ width: activeNode === 1 ? "95%" : "40%" }} />
+          </div>
+        </div>
+
+        {/* Satellite Node: Arbitrage Vault (Bottom-Left) */}
+        <div 
+          className={`absolute left-1 bottom-1 sm:left-2 sm:bottom-2 z-10 rounded-2xl border-2 p-2.5 sm:p-3 transition-all duration-500 w-[110px] sm:w-[135px] ${
+            activeNode === 2 ? "border-ink bg-cobalt/15 shadow-[4px_4px_0_0_var(--ink)] font-bold text-ink" : "border-ink/20 bg-white/40 text-ink/75"
+          }`}
+          style={{ animationDelay: "2s" }}
+        >
+          <div className="flex justify-between items-center">
+            <span className="text-[9px] sm:text-[11px] font-bold">Arbitrage Vault</span>
+            <span className="text-[9px] sm:text-[11px] text-cobalt font-bold font-mono">28.5%</span>
+          </div>
+          <div className="h-1.5 w-full bg-white border border-ink rounded-full overflow-hidden mt-1.5">
+            <div className="h-full bg-cobalt transition-all duration-1000" style={{ width: activeNode === 2 ? "90%" : "25%" }} />
+          </div>
+        </div>
+
+        {/* Dynamic status/metrics panel (Top-Right) */}
+        <div className="absolute right-1 top-1 sm:right-2 sm:top-2 z-10 rounded-2xl border-2 border-ink bg-white p-2.5 sm:p-3 shadow-[4px_4px_0_0_var(--ink)] w-[110px] sm:w-[135px] text-right" style={{ animationDelay: "0.5s" }}>
+          <span className="text-[8px] sm:text-[9px] uppercase tracking-widest text-ink/50 block font-bold font-mono">Est. Yield Lock</span>
+          <span className="text-xs sm:text-base font-black text-coral block mt-0.5 font-mono">22.4% APY</span>
+        </div>
+
+        {/* Connection flow lines inside SVG */}
+        <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 400 300" fill="none">
+          <defs>
+            <linearGradient id="flow-coral" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="var(--color-coral)" stopOpacity="0.8" />
+              <stop offset="100%" stopColor="var(--color-coral)" stopOpacity="0.2" />
+            </linearGradient>
+            <linearGradient id="flow-lime" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="var(--color-lime)" stopOpacity="0.8" />
+              <stop offset="100%" stopColor="var(--color-lime)" stopOpacity="0.2" />
+            </linearGradient>
+            <linearGradient id="flow-cobalt" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="var(--color-cobalt)" stopOpacity="0.8" />
+              <stop offset="100%" stopColor="var(--color-cobalt)" stopOpacity="0.2" />
+            </linearGradient>
+          </defs>
+          {/* Paths connecting nodes to center (200, 150) */}
+          <path d="M75 55 L200 150" stroke="url(#flow-coral)" strokeWidth="2" strokeDasharray="6 6" className="animate-flow-dash" />
+          <path d="M325 240 L200 150" stroke="url(#flow-lime)" strokeWidth="2" strokeDasharray="6 6" className="animate-flow-dash" />
+          <path d="M75 240 L200 150" stroke="url(#flow-cobalt)" strokeWidth="2" strokeDasharray="6 6" className="animate-flow-dash" />
+        </svg>
+      </div>
+
+      {/* Footer Metrics */}
+      <div className="grid grid-cols-3 gap-2 border-t-2 border-ink/10 pt-4 text-center z-10 font-mono">
+        <div>
+          <span className="text-[9px] text-ink/50 uppercase font-bold block">Daily Harvest</span>
+          <span className="text-xs font-bold text-ink mt-0.5 block">$3,812.44</span>
+        </div>
+        <div>
+          <span className="text-[9px] text-ink/50 uppercase font-bold block">Total Placed</span>
+          <span className="text-xs font-bold text-coral mt-0.5 block">100% Safe</span>
+        </div>
+        <div>
+          <span className="text-[9px] text-ink/50 uppercase font-bold block">Smart Contracts</span>
+          <span className="text-xs font-bold text-cobalt mt-0.5 block">Verified</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ---------------- DYNAMIC MINI CHART ---------------- */
+function DynamicMiniChart() {
+  const [points, setPoints] = useState([30, 35, 32, 40, 38, 45, 42, 50, 48, 55, 52, 60, 58, 65, 62, 70]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPoints((prev) => {
+        const nextPoint = Math.max(10, Math.min(90, prev[prev.length - 1] + (Math.random() * 12 - 5)));
+        return [...prev.slice(1), nextPoint];
+      });
+    }, 1500);
+    return () => clearInterval(interval);
+  }, []);
+
+  const w = 140, h = 30;
+  const max = 100;
+  const step = w / (points.length - 1);
+  const path = points
+    .map((p, i) => `${i === 0 ? "M" : "L"} ${i * step},${h - (p / max) * h}`)
+    .join(" ");
+
+  return (
+    <svg viewBox={`0 0 ${w} ${h}`} className="h-8 w-28 overflow-visible">
+      <defs>
+        <linearGradient id="chart-grad" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor="var(--color-coral)" />
+          <stop offset="50%" stopColor="var(--color-cobalt)" />
+          <stop offset="100%" stopColor="var(--color-lime)" />
+        </linearGradient>
+      </defs>
+      <path
+        d={path}
+        fill="none"
+        stroke="url(#chart-grad)"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      {/* Pulse dot at the end */}
+      <circle
+        cx={w}
+        cy={h - (points[points.length - 1] / max) * h}
+        r="3"
+        fill="var(--color-coral)"
+        className="animate-ping"
+      />
+      <circle
+        cx={w}
+        cy={h - (points[points.length - 1] / max) * h}
+        r="2"
+        fill="var(--color-coral)"
+      />
+    </svg>
+  );
+}
+
+/* ---------------- LIVE YIELD LEDGER & ARBITRAGE FEED ---------------- */
+function LiveYieldLedger() {
+  const [balance, setBalance] = useState(1482.41098);
+  const [events, setEvents] = useState([
+    { id: 1, type: "arbitrage", label: "SOL/USDC Arbitrage capture on Orca", value: "+$84.12", time: "Just now" },
+    { id: 2, type: "staking", label: "Auto-compounded Aave ETH lending yield", value: "+0.0042 ETH", time: "1m ago" },
+    { id: 3, type: "mint", label: "Liquidity premium swap pool yield harvested", value: "+$12.09", time: "3m ago" },
+  ]);
+
+  // Live balance ticking
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setBalance((prev) => prev + (Math.random() * 0.00035 + 0.00005));
+    }, 300);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Live ledger events rolling
+  useEffect(() => {
+    const eventPool = [
+      { type: "arbitrage", label: "BTC/USDT triangular trade arbitrage captured", value: "+$144.50" },
+      { type: "staking", label: "Liquid restaking rewards compounded (Eigen)", value: "+0.0091 ETH" },
+      { type: "mint", label: "Lido staked ETH rewards auto-reinvested", value: "+0.0035 stETH" },
+      { type: "arbitrage", label: "SOL/ETH spread arbitrage locked on Jupiter", value: "+$42.80" },
+      { type: "staking", label: "Rocket Pool node yield harvested", value: "+0.0019 rETH" },
+      { type: "mint", label: "Stablecoin pool rebalancing rewards unlocked", value: "+$8.44" },
+    ];
+
+    const interval = setInterval(() => {
+      const randomEvent = eventPool[Math.floor(Math.random() * eventPool.length)];
+      setEvents((prev) => {
+        const nextId = prev[0].id + 1;
+        const newEvent = { ...randomEvent, id: nextId, time: "Just now" };
+        const updatedPrev = prev.map((e, idx) => ({
+          ...e,
+          time: idx === 0 ? "1m ago" : `${idx + 1}m ago`,
+        }));
+        return [newEvent, ...updatedPrev.slice(0, 2)];
+      });
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="rounded-3xl border-2 border-ink bg-cream p-6 relative overflow-hidden h-[300px] flex flex-col justify-between text-left shadow-[8px_8px_0_0_var(--ink)]">
+      {/* Header */}
+      <div className="flex justify-between items-center z-10 border-b border-ink/10 pb-3">
+        <div className="flex items-center gap-2">
+          <Activity className="h-4 w-4 text-coral animate-pulse" />
+          <span className="text-xs uppercase font-bold tracking-wider text-ink/60 font-mono">Algorithmic Yield Stream</span>
+        </div>
+        <div className="inline-flex items-center gap-1.5 rounded-full bg-lime border border-ink px-2.5 py-0.5 text-[9px] font-bold text-ink shadow-[2px_2px_0_0_var(--ink)]">
+          <span className="h-1.5 w-1.5 rounded-full bg-ink animate-ping" />
+          LIVE LEDGER
+        </div>
+      </div>
+
+      {/* Main Stats / Ticker */}
+      <div className="my-3 z-10 flex justify-between items-end">
+        <div>
+          <span className="text-[10px] uppercase font-bold text-ink/40 block font-mono">Accrued Profit (Real-Time)</span>
+          <div className="flex items-baseline gap-2 mt-1">
+            <span className="text-2xl font-black text-ink font-mono tracking-tight">
+              ${balance.toLocaleString(undefined, { minimumFractionDigits: 5, maximumFractionDigits: 5 })}
+            </span>
+            <span className="text-[10px] text-coral font-bold animate-pulse font-mono">+0.02%/min</span>
+          </div>
+        </div>
+        <div>
+          <DynamicMiniChart />
+        </div>
+      </div>
+
+      {/* Live Event Stream Feed */}
+      <div className="flex-1 space-y-2 z-10 overflow-hidden relative mt-2">
+        {events.map((e) => (
+          <div
+            key={e.id}
+            className="flex items-center justify-between rounded-xl bg-white/60 px-3 py-2 border-2 border-ink/10 hover:border-ink transition-all"
+          >
+            <div className="flex items-center gap-2">
+              <span className={`h-1.5 w-1.5 rounded-full ${e.type === "arbitrage" ? "bg-coral" : e.type === "staking" ? "bg-cobalt" : "bg-lime"}`} />
+              <div className="text-left">
+                <div className="text-[11px] font-semibold text-ink/80 line-clamp-1">{e.label}</div>
+                <div className="text-[8px] text-ink/40 font-mono">{e.time}</div>
+              </div>
+            </div>
+            <div className="text-[11px] font-bold text-coral text-right shrink-0 ml-2 font-mono">
+              {e.value}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ---------------- LOGGED-IN PAGE CONTACT FORM ---------------- */
+function ContactEnquiryLoggedIn({
+  initialName,
+  initialEmail,
+  initialPhone,
+}: {
+  initialName: string;
+  initialEmail: string;
+  initialPhone: string;
+}) {
+  const [form, setForm] = useState({
+    name: initialName,
+    email: initialEmail,
+    phone: initialPhone,
+    message: "",
+  });
+  const [selectedCountry, setSelectedCountry] = useState("CH");
+  const [loading, setLoading] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<{
+    name?: string;
+    email?: string;
+    phone?: string;
+  }>({});
+  const [status, setStatus] = useState<{ type: "success" | "error"; msg: string } | null>(null);
+
+  // Storage states
+  const [uploadedFileUrl, setUploadedFileUrl] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    setUploadError(null);
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Upload failed");
+      }
+      setUploadedFileUrl(data.fileUrl);
+    } catch (err: any) {
+      setUploadError(err.message || "An error occurred during file upload.");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const validatePhone = (val: string, countryCode: string = selectedCountry) => {
+    return validatePhoneNumber(val, countryCode);
+  };
+
+  const validateEmail = (val: string) => {
+    if (!val) return "Please enter an email address";
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(val)) return "Please enter a valid email address";
+    return undefined;
+  };
+
+  const validateName = (val: string) => {
+    if (!val.trim()) return "Please enter your full name";
+    return undefined;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setStatus(null);
+
+    const nameErr = validateName(form.name);
+    const emailErr = validateEmail(form.email);
+    const phoneErr = validatePhone(form.phone, selectedCountry);
+
+    if (nameErr || emailErr || phoneErr) {
+      setValidationErrors({ name: nameErr, email: emailErr, phone: phoneErr });
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const fullPhone = formatFullPhoneNumber(form.phone, selectedCountry);
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...form, phone: fullPhone, countryCode: selectedCountry, fileUrl: uploadedFileUrl }),
+      });
+      const data = await response.json();
+      setLoading(false);
+
+      if (response.ok) {
+        setStatus({
+          type: "success",
+          msg: "Thank you! Your enquiry has been received successfully.",
+        });
+        setForm({ ...form, message: "" });
+        setUploadedFileUrl(null);
+        setValidationErrors({});
+      } else {
+        setStatus({
+          type: "error",
+          msg: data.error || "An error occurred during submission.",
+        });
+      }
+    } catch (err: unknown) {
+      setLoading(false);
+      setStatus({ type: "error", msg: "Network error. Please try again." });
+    }
+  };
+
+  return (
+    <div className="rounded-[2.5rem] border-2 border-ink bg-cream p-8 md:p-10 shadow-[10px_10px_0_0_var(--ink)] text-left relative">
+      <form onSubmit={handleSubmit} className="space-y-6 text-left">
+        <div className="grid md:grid-cols-2 gap-6">
+          <div>
+            <label className="mb-2 block text-xs font-bold uppercase tracking-widest text-ink/75">
+              Full Name
+            </label>
+            <div className="relative">
+              <input
+                type="text"
+                value={form.name}
+                onChange={(e) => {
+                  setForm({ ...form, name: e.target.value });
+                  setValidationErrors((prev) => ({ ...prev, name: validateName(e.target.value) }));
+                }}
+                className={`w-full rounded-2xl border-2 border-ink bg-white/60 px-4 py-3 outline-none focus:border-coral focus:bg-white transition text-ink text-base ${validationErrors.name ? "border-coral bg-coral/5" : ""}`}
+              />
+            </div>
+            {validationErrors.name && (
+              <p className="text-xs text-coral mt-1 font-semibold">{validationErrors.name}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="mb-2 block text-xs font-bold uppercase tracking-widest text-ink/75">
+              Email Address
+            </label>
+            <div className="relative">
+              <input
+                type="email"
+                value={form.email}
+                onChange={(e) => {
+                  setForm({ ...form, email: e.target.value });
+                  setValidationErrors((prev) => ({ ...prev, email: validateEmail(e.target.value) }));
+                }}
+                className={`w-full rounded-2xl border-2 border-ink bg-white/60 px-4 py-3 outline-none focus:border-coral focus:bg-white transition text-ink text-base ${validationErrors.email ? "border-coral bg-coral/5" : ""}`}
+              />
+            </div>
+            {validationErrors.email && (
+              <p className="text-xs text-coral mt-1 font-semibold">{validationErrors.email}</p>
+            )}
+          </div>
+        </div>
+
+        <div>
+          <label className="mb-2 block text-xs font-bold uppercase tracking-widest text-ink/75">
+            Phone Number
+          </label>
+          <div className="flex gap-2">
+            <CountrySelect
+              value={selectedCountry}
+              onChange={(newCountry) => {
+                setSelectedCountry(newCountry);
+                setValidationErrors((prev) => ({ ...prev, phone: validatePhone(form.phone, newCountry) }));
+              }}
+            />
+            <input
+              type="text"
+              value={form.phone}
+              onChange={(e) => {
+                setForm({ ...form, phone: e.target.value });
+                setValidationErrors((prev) => ({ ...prev, phone: validatePhone(e.target.value, selectedCountry) }));
+              }}
+              placeholder={getCountry(selectedCountry).placeholder}
+              className={`flex-1 rounded-2xl border-2 border-ink bg-white/60 px-4 py-3 outline-none focus:border-coral focus:bg-white transition text-ink text-base ${validationErrors.phone ? "border-coral bg-coral/5" : ""}`}
+            />
+          </div>
+          {validationErrors.phone && (
+            <p className="text-xs text-coral mt-1 font-semibold">{validationErrors.phone}</p>
+          )}
+        </div>
+
+        <div>
+          <label className="mb-2 block text-xs font-bold uppercase tracking-widest text-ink/75">
+            Message (Optional)
+          </label>
+          <textarea
+            rows={4}
+            placeholder="Outline your investment goals…"
+            value={form.message}
+            onChange={(e) => setForm({ ...form, message: e.target.value })}
+            className="w-full resize-none rounded-2xl border-2 border-ink bg-white/60 px-4 py-3 outline-none focus:border-coral focus:bg-white transition text-ink text-base"
+          />
+        </div>
+
+        <div>
+          <label className="mb-2 block text-xs font-bold uppercase tracking-widest text-ink/75">
+            Upload Document (Optional)
+          </label>
+          <div className="flex flex-col gap-2">
+            <input
+              type="file"
+              onChange={handleFileUpload}
+              className="w-full rounded-2xl border-2 border-ink bg-white/60 px-4 py-3 outline-none focus:border-coral focus:bg-white transition text-ink text-base file:mr-4 file:py-1.5 file:px-4 file:rounded-full file:border-2 file:border-ink file:text-xs file:font-bold file:bg-cream file:text-ink file:cursor-pointer hover:file:bg-coral hover:file:text-cream transition-colors duration-200"
+            />
+            {uploading && <p className="text-xs text-ink/60 font-mono">Uploading file to storage...</p>}
+            {uploadError && <p className="text-xs text-coral font-semibold">{uploadError}</p>}
+            {uploadedFileUrl && (
+              <p className="text-xs text-ink flex items-center gap-1.5 font-semibold">
+                <span className="text-green-700 bg-green-100 border border-green-300 rounded px-1.5 py-0.5">✓ File uploaded:</span>
+                <a href={uploadedFileUrl} target="_blank" rel="noopener noreferrer" className="underline font-mono truncate max-w-xs hover:text-coral">
+                  {uploadedFileUrl.split("/").pop()}
+                </a>
+              </p>
+            )}
+          </div>
+        </div>
+
+        {status && (
+          <div
+            className={`rounded-2xl border-2 p-4 text-sm leading-relaxed ${status.type === "success" ? "border-ink bg-lime text-ink font-bold" : "border-coral bg-coral/10 text-coral font-semibold"}`}
+          >
+            {status.msg}
+          </div>
+        )}
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full rounded-full bg-ink px-6 py-4 text-base font-semibold text-cream hover:bg-coral transition-colors flex items-center justify-center gap-2 mt-2 disabled:opacity-50 cursor-pointer shadow-[4px_4px_0_0_var(--ink)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[0_0_0_0_var(--ink)]"
+        >
+          {loading ? "Submitting enquiry..." : "Submit Enquiry"}
+        </button>
+      </form>
+    </div>
+  );
+}
