@@ -193,6 +193,44 @@ app.post("/api/signup", async (req, res) => {
     users.push(newUser);
     await saveUsers(users);
 
+    // If CRM API endpoint and token are configured, forward to external CRM!
+    const crmUrl = process.env.CRM_API_URL;
+    const token = process.env.CRM_AUTH_TOKEN || process.env.CRM_TOKEN || process.env.CRM_API_KEY;
+    if (crmUrl && token) {
+      const [first_name, ...lastNameParts] = (name || "Unknown").trim().split(" ");
+      const last_name = lastNameParts.join(" ") || "Lead";
+
+      const payload = {
+        country_name: (countryCode || "ch").toLowerCase(),
+        description: "Signup Lead",
+        phone: phone || "",
+        email: email.toLowerCase().trim(),
+        first_name,
+        last_name,
+        custom_fields: {
+          Source_ID: "website",
+          How_Much_Invested: "0",
+          Outline_Your_Case: "Signup Lead"
+        }
+      };
+
+      console.log(`Forwarding signup lead to CRM endpoint: ${crmUrl}`);
+      fetch(crmUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-token": token,
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+      }).then(async response => {
+        const text = await response.text();
+        console.log(`CRM signup response status ${response.status}: ${text}`);
+      }).catch(err => {
+        console.error("External CRM signup forwarding failed:", err);
+      });
+    }
+
     // Increment Leads Count on Signup
     const currentCount = await getLeadsCount();
     await setLeadsCount(currentCount + 1);

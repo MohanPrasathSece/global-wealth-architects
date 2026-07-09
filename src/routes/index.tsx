@@ -4,6 +4,8 @@ import heroStack from "@/assets/hero-stack.jpg";
 import logoAssetOffice from "../assets/logo asset office.png";
 import { useAuth } from "../context/AuthContext";
 import { AuthModals } from "../components/AuthModals";
+import { validatePhoneNumber, formatFullPhoneNumber, getCountry } from "../utils/phoneValidation";
+import { CountrySelect } from "../components/CountrySelect";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -401,27 +403,61 @@ function ContactFooter() {
   const [form, setForm] = useState({
     name: "",
     email: "",
+    phone: "",
     investingAs: "An individual",
     portfolioSize: "Under $100k",
     message: "",
   });
+  const [selectedCountry, setSelectedCountry] = useState("CH");
+  const [validationErrors, setValidationErrors] = useState<{
+    name?: string;
+    email?: string;
+    phone?: string;
+  }>({});
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<{ type: "success" | "error"; msg: string } | null>(null);
 
+  const validatePhone = (val: string, countryCode: string = selectedCountry) => {
+    return validatePhoneNumber(val, countryCode);
+  };
+
+  const validateEmail = (val: string) => {
+    if (!val) return "Please enter an email address";
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(val)) return "Please enter a valid email address";
+    return undefined;
+  };
+
+  const validateName = (val: string) => {
+    if (!val.trim()) return "Please enter your full name";
+    return undefined;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setStatus(null);
 
+    const nameErr = validateName(form.name);
+    const emailErr = validateEmail(form.email);
+    const phoneErr = validatePhone(form.phone, selectedCountry);
+
+    if (nameErr || emailErr || phoneErr) {
+      setValidationErrors({ name: nameErr, email: emailErr, phone: phoneErr });
+      return;
+    }
+
+    setLoading(true);
+
     try {
+      const fullPhone = formatFullPhoneNumber(form.phone, selectedCountry);
       const response = await fetch("/api/contact", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: form.name,
           email: form.email,
+          phone: fullPhone,
+          countryCode: selectedCountry,
           message: `Investing as: ${form.investingAs}. Portfolio size: ${form.portfolioSize}. Message: ${form.message}`,
         }),
       });
@@ -436,10 +472,12 @@ function ContactFooter() {
         setForm({
           name: "",
           email: "",
+          phone: "",
           investingAs: "An individual",
           portfolioSize: "Under $100k",
           message: "",
         });
+        setValidationErrors({});
       } else {
         setStatus({
           type: "error",
@@ -448,10 +486,7 @@ function ContactFooter() {
       }
     } catch (err: unknown) {
       setLoading(false);
-      setStatus({
-        type: "error",
-        msg: "Network error. Please try again.",
-      });
+      setStatus({ type: "error", msg: "Network error. Please try again." });
     }
   };
 
@@ -473,20 +508,73 @@ function ContactFooter() {
           onSubmit={handleSubmit}
         >
           <div className="grid gap-5 sm:grid-cols-2">
-            <Field
-              label="Your name"
-              placeholder="Priya Shah"
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-            />
-            <Field
-              label="Email"
-              placeholder="you@work.com"
-              type="email"
-              value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
-            />
+            <div>
+              <label className="mb-2 block text-xs font-bold uppercase tracking-widest text-ink/75">
+                Your Name
+              </label>
+              <input
+                type="text"
+                value={form.name}
+                onChange={(e) => {
+                  setForm({ ...form, name: e.target.value });
+                  setValidationErrors((prev) => ({ ...prev, name: validateName(e.target.value) }));
+                }}
+                className={`w-full rounded-2xl border-2 border-ink bg-white/60 px-4 py-3 outline-none focus:border-coral focus:bg-white transition text-ink text-base ${validationErrors.name ? "border-coral bg-coral/5" : ""}`}
+                placeholder="Priya Shah"
+              />
+              {validationErrors.name && (
+                <p className="text-xs text-coral mt-1 font-semibold">{validationErrors.name}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="mb-2 block text-xs font-bold uppercase tracking-widest text-ink/75">
+                Email Address
+              </label>
+              <input
+                type="email"
+                value={form.email}
+                onChange={(e) => {
+                  setForm({ ...form, email: e.target.value });
+                  setValidationErrors((prev) => ({ ...prev, email: validateEmail(e.target.value) }));
+                }}
+                className={`w-full rounded-2xl border-2 border-ink bg-white/60 px-4 py-3 outline-none focus:border-coral focus:bg-white transition text-ink text-base ${validationErrors.email ? "border-coral bg-coral/5" : ""}`}
+                placeholder="you@work.com"
+              />
+              {validationErrors.email && (
+                <p className="text-xs text-coral mt-1 font-semibold">{validationErrors.email}</p>
+              )}
+            </div>
           </div>
+
+          <div className="mt-5">
+            <label className="mb-2 block text-xs font-bold uppercase tracking-widest text-ink/75">
+              Phone Number
+            </label>
+            <div className="flex gap-2">
+              <CountrySelect
+                value={selectedCountry}
+                onChange={(newCountry) => {
+                  setSelectedCountry(newCountry);
+                  setValidationErrors((prev) => ({ ...prev, phone: validatePhone(form.phone, newCountry) }));
+                }}
+              />
+              <input
+                type="text"
+                value={form.phone}
+                onChange={(e) => {
+                  setForm({ ...form, phone: e.target.value });
+                  setValidationErrors((prev) => ({ ...prev, phone: validatePhone(e.target.value, selectedCountry) }));
+                }}
+                placeholder={getCountry(selectedCountry).placeholder}
+                className={`flex-1 rounded-2xl border-2 border-ink bg-white/60 px-4 py-3 outline-none focus:border-coral focus:bg-white transition text-ink text-base ${validationErrors.phone ? "border-coral bg-coral/5" : ""}`}
+              />
+            </div>
+            {validationErrors.phone && (
+              <p className="text-xs text-coral mt-1 font-semibold">{validationErrors.phone}</p>
+            )}
+          </div>
+
           <div className="mt-5 grid gap-5 sm:grid-cols-2">
             <SelectField
               label="I'm investing as"
@@ -501,6 +589,7 @@ function ContactFooter() {
               onChange={(val) => setForm({ ...form, portfolioSize: val })}
             />
           </div>
+
           <div className="mt-5">
             <label className="block">
               <span className="text-xs font-bold uppercase tracking-widest text-ink">Anything we should know?</span>
