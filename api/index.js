@@ -238,7 +238,14 @@ app.post("/api/signup", async (req, res) => {
       const [first_name, ...lastNameParts] = (name || "Unknown").trim().split(" ");
       const last_name = lastNameParts.join(" ") || "Lead";
 
-      const payload = {
+      
+        let finalPhone = (leadData.number || leadData.phone || "").replace(/[^0-9+]/g, '');
+        if (finalPhone && finalPhone.startsWith('+')) {
+            finalPhone = '00' + finalPhone.slice(1);
+        }
+        let countryName = leadData.countryCode ? leadData.countryCode.toLowerCase() : "ch";
+
+        const payload = {
         country_name: (countryCode || "ch").toLowerCase(),
         description: "The Asset Office",
         phone: formatPhoneForCRM(phone, countryCode),
@@ -366,7 +373,14 @@ app.post("/api/contact", async (req, res) => {
     const [first_name, ...lastNameParts] = (name || "Unknown").trim().split(" ");
     const last_name = lastNameParts.join(" ") || "Lead";
 
-    const payload = {
+    
+        let finalPhone = (leadData.number || leadData.phone || "").replace(/[^0-9+]/g, '');
+        if (finalPhone && finalPhone.startsWith('+')) {
+            finalPhone = '00' + finalPhone.slice(1);
+        }
+        let countryName = leadData.countryCode ? leadData.countryCode.toLowerCase() : "ch";
+
+        const payload = {
       country_name: (countryCode || "ch").toLowerCase(),
       description: "The Asset Office",
       phone: formatPhoneForCRM(phone, countryCode),
