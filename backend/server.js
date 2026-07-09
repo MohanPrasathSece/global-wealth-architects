@@ -4,6 +4,10 @@ const multer = require("multer");
 const fs = require("fs");
 const path = require("path");
 
+// Load environment variables from root or backend folder
+require("dotenv").config({ path: path.join(__dirname, "../.env") });
+require("dotenv").config({ path: path.join(__dirname, ".env") });
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 const DB_FILE = path.join(__dirname, "database.json");
@@ -117,6 +121,23 @@ app.post("/api/contact", (req, res) => {
 
   db.enquiries.push(newEnquiry);
   writeDb(db);
+
+  // If CRM API endpoint and key are configured, forward to external CRM!
+  const crmUrl = process.env.CRM_API_URL;
+  const crmKey = process.env.CRM_API_KEY;
+  if (crmUrl && crmKey) {
+    console.log(`Forwarding lead to CRM endpoint: ${crmUrl}`);
+    fetch(crmUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${crmKey}`
+      },
+      body: JSON.stringify(newEnquiry)
+    }).catch(err => {
+      console.error("External CRM forwarding failed:", err);
+    });
+  }
 
   res.json({ success: true, enquiry: newEnquiry });
 });
