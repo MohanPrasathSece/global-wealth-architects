@@ -300,130 +300,221 @@ function Dashboard() {
 
 /* ---------------- CAPITAL ALLOCATION ENGINE ---------------- */
 function CapitalAllocationEngine() {
-  const [activeNode, setActiveNode] = useState<number | null>(null);
+  const initialCandles = [
+    { open: 88200, close: 89100, high: 89400, low: 88000, volume: 120 },
+    { open: 89100, close: 88700, high: 89300, low: 88500, volume: 95 },
+    { open: 88700, close: 89500, high: 89800, low: 88600, volume: 150 },
+    { open: 89500, close: 90200, high: 90500, low: 89300, volume: 180 },
+    { open: 90200, close: 89800, high: 90400, low: 89600, volume: 110 },
+    { open: 89800, close: 90600, high: 90800, low: 89500, volume: 140 },
+    { open: 90600, close: 91400, high: 91600, low: 90400, volume: 210 },
+    { open: 91400, close: 90900, high: 91500, low: 90700, volume: 130 },
+    { open: 90900, close: 91800, high: 92100, low: 90800, volume: 165 },
+    { open: 91800, close: 92400, high: 92700, low: 91600, volume: 195 },
+    { open: 92400, close: 92900, high: 93200, low: 92200, volume: 240 },
+    { open: 92900, close: 93450, high: 93600, low: 92700, volume: 280 }
+  ];
+
+  const [candles, setCandles] = useState(initialCandles);
+  const [price, setPrice] = useState(93450);
+  const [change, setChange] = useState(2.45);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setActiveNode((prev) => (prev === null ? 0 : (prev + 1) % 3));
-    }, 3000);
+      setCandles((prev) => {
+        const next = [...prev];
+        const lastIndex = next.length - 1;
+        const last = { ...next[lastIndex] };
+
+        // Random price fluctuation
+        const delta = Math.round((Math.random() * 120 - 55));
+        const newPrice = Math.max(90000, last.close + delta);
+
+        last.close = newPrice;
+        if (newPrice > last.high) last.high = newPrice;
+        if (newPrice < last.low) last.low = newPrice;
+        last.volume += Math.round(Math.random() * 5);
+
+        next[lastIndex] = last;
+        setPrice(newPrice);
+
+        // Update overall change percentage
+        const pct = ((newPrice - 88200) / 88200) * 100;
+        setChange(parseFloat(pct.toFixed(2)));
+
+        // Occasionally add a new candle and pop the first one
+        if (Math.random() > 0.82) {
+          const newCandle = {
+            open: last.close,
+            close: last.close,
+            high: last.close,
+            low: last.close,
+            volume: Math.round(Math.random() * 50 + 50)
+          };
+          return [...next.slice(1), newCandle];
+        }
+
+        return next;
+      });
+    }, 600);
+
     return () => clearInterval(interval);
   }, []);
+
+  // Compute boundaries for Y scaling
+  const prices = candles.flatMap(c => [c.open, c.close, c.high, c.low]);
+  const minPrice = Math.min(...prices) * 0.998;
+  const maxPrice = Math.max(...prices) * 1.002;
+  const priceRange = maxPrice - minPrice;
+
+  const getPercentageY = (val: number) => {
+    return 180 - ((val - minPrice) / priceRange) * 140;
+  };
+
+  const candleWidth = 24;
+  const spacing = 36;
+  const startX = 20;
+
+  // Build moving average points path
+  const maPoints = candles.map((c, i) => {
+    const x = startX + i * spacing + candleWidth / 2;
+    const y = getPercentageY((c.open + c.close) / 2);
+    return `${x},${y}`;
+  });
+  const maPath = `M ${maPoints.join(" L ")}`;
+
+  // Find max volume for volume scaling
+  const maxVolume = Math.max(...candles.map(c => c.volume)) || 1;
 
   return (
     <div className="rounded-3xl border-2 border-ink bg-cream p-6 md:p-8 space-y-6 text-left relative overflow-hidden h-[420px] flex flex-col justify-between shadow-[8px_8px_0_0_var(--ink)]">
       {/* Header Info */}
       <div className="flex justify-between items-start z-10">
         <div>
-          <h3 className="font-display text-2xl font-semibold text-ink tracking-tight">Yield Router Engine</h3>
+          <h3 className="font-display text-2xl font-semibold text-ink tracking-tight flex items-center gap-2">
+            <span>BTC/USD Live Terminal</span>
+          </h3>
           <p className="text-sm text-ink/65 mt-1">
-            Real-time automated capital allocation routing.
+            Real-time algorithmic trading feeds.
           </p>
         </div>
-        <span className="flex items-center gap-1.5 rounded-full bg-lime border border-ink px-3 py-1 text-xs text-ink font-bold shadow-[2px_2px_0_0_var(--ink)]">
-          <span className="h-2 w-2 rounded-full bg-ink animate-pulse" />
-          ACTIVE
-        </span>
+        <div className="flex flex-col items-end gap-1.5">
+          <span className="flex items-center gap-1.5 rounded-full bg-lime border border-ink px-3 py-1 text-xs text-ink font-bold shadow-[2px_2px_0_0_var(--ink)]">
+            <span className="h-2 w-2 rounded-full bg-ink animate-pulse" />
+            LIVE FEEDS
+          </span>
+          <span className={`text-sm font-mono font-bold mt-1 ${change >= 0 ? "text-green-600 font-extrabold" : "text-coral font-extrabold"}`}>
+            ${price.toLocaleString()} ({change >= 0 ? "+" : ""}{change}%)
+          </span>
+        </div>
       </div>
 
-      {/* Visual Canvas/SVG Animation Area */}
-      <div className="relative flex-1 w-full my-4 flex items-center justify-center">
-        {/* Core Engine Node */}
-        <div 
-          className="absolute z-20 h-16 w-16 sm:h-20 sm:w-20 rounded-full bg-cream border-2 border-ink flex flex-col items-center justify-center shadow-[4px_4px_0_0_var(--ink)] hover:scale-105 transition-all duration-300 group left-[calc(50%-32px)] sm:left-[calc(50%-40px)] top-[calc(50%-32px)] sm:top-[calc(50%-40px)]"
-        >
-          <div className="absolute inset-0 rounded-full border border-dashed border-ink/40 animate-spin-slow" />
-          <Logo />
-        </div>
+      {/* Candlestick SVG Container */}
+      <div className="relative flex-1 w-full my-2 bg-white/40 rounded-2xl border-2 border-ink/10 overflow-hidden p-2">
+        <svg className="w-full h-full" viewBox="0 0 460 220" preserveAspectRatio="none">
+          {/* Horizontal grid lines */}
+          {[0.25, 0.5, 0.75].map((p, idx) => (
+            <line
+              key={idx}
+              x1="0"
+              y1={180 - p * 140}
+              x2="460"
+              y2={180 - p * 140}
+              stroke="var(--ink)"
+              strokeOpacity="0.08"
+              strokeDasharray="4 4"
+            />
+          ))}
 
-        {/* Satellite Node: Staking Pool (Top-Left) */}
-        <div 
-          className={`absolute left-1 top-1 sm:left-2 sm:top-2 z-10 rounded-2xl border-2 p-2.5 sm:p-3 transition-all duration-500 w-[110px] sm:w-[135px] ${
-            activeNode === 0 ? "border-ink bg-coral/10 shadow-[4px_4px_0_0_var(--ink)] font-bold text-ink" : "border-ink/20 bg-white/40 text-ink/75"
-          }`}
-        >
-          <div className="flex justify-between items-center">
-            <span className="text-[9px] sm:text-[11px] font-bold">Staking Node</span>
-            <span className="text-[9px] sm:text-[11px] text-coral font-bold font-mono">14.2%</span>
-          </div>
-          <div className="h-1.5 w-full bg-white border border-ink rounded-full overflow-hidden mt-1.5">
-            <div className="h-full bg-coral transition-all duration-1000" style={{ width: activeNode === 0 ? "80%" : "30%" }} />
-          </div>
-        </div>
+          {/* Render volume bars */}
+          {candles.map((c, i) => {
+            const isGreen = c.close >= c.open;
+            const x = startX + i * spacing;
+            const volHeight = (c.volume / maxVolume) * 25;
+            const y = 210 - volHeight;
+            return (
+              <rect
+                key={`vol-${i}`}
+                x={x}
+                y={y}
+                width={candleWidth}
+                height={volHeight}
+                fill={isGreen ? "var(--color-lime)" : "var(--color-coral)"}
+                fillOpacity="0.25"
+                stroke="var(--ink)"
+                strokeOpacity="0.1"
+                strokeWidth="1"
+                rx="1"
+              />
+            );
+          })}
 
-        {/* Satellite Node: Liquidity Yield (Bottom-Right) */}
-        <div 
-          className={`absolute right-1 bottom-1 sm:right-2 sm:bottom-2 z-10 rounded-2xl border-2 p-2.5 sm:p-3 transition-all duration-500 w-[110px] sm:w-[135px] ${
-            activeNode === 1 ? "border-ink bg-lime/20 shadow-[4px_4px_0_0_var(--ink)] font-bold text-ink" : "border-ink/20 bg-white/40 text-ink/75"
-          }`}
-          style={{ animationDelay: "1s" }}
-        >
-          <div className="flex justify-between items-center">
-            <span className="text-[9px] sm:text-[11px] font-bold">Liquidity LPs</span>
-            <span className="text-[9px] sm:text-[11px] text-ink font-bold font-mono">24.8%</span>
-          </div>
-          <div className="h-1.5 w-full bg-white border border-ink rounded-full overflow-hidden mt-1.5">
-            <div className="h-full bg-lime transition-all duration-1000" style={{ width: activeNode === 1 ? "95%" : "40%" }} />
-          </div>
-        </div>
+          {/* Render candles (wick + body) */}
+          {candles.map((c, i) => {
+            const isGreen = c.close >= c.open;
+            const x = startX + i * spacing;
+            const centerX = x + candleWidth / 2;
 
-        {/* Satellite Node: Arbitrage Vault (Bottom-Left) */}
-        <div 
-          className={`absolute left-1 bottom-1 sm:left-2 sm:bottom-2 z-10 rounded-2xl border-2 p-2.5 sm:p-3 transition-all duration-500 w-[110px] sm:w-[135px] ${
-            activeNode === 2 ? "border-ink bg-cobalt/15 shadow-[4px_4px_0_0_var(--ink)] font-bold text-ink" : "border-ink/20 bg-white/40 text-ink/75"
-          }`}
-          style={{ animationDelay: "2s" }}
-        >
-          <div className="flex justify-between items-center">
-            <span className="text-[9px] sm:text-[11px] font-bold">Arbitrage Vault</span>
-            <span className="text-[9px] sm:text-[11px] text-cobalt font-bold font-mono">28.5%</span>
-          </div>
-          <div className="h-1.5 w-full bg-white border border-ink rounded-full overflow-hidden mt-1.5">
-            <div className="h-full bg-cobalt transition-all duration-1000" style={{ width: activeNode === 2 ? "90%" : "25%" }} />
-          </div>
-        </div>
+            const yOpen = getPercentageY(c.open);
+            const yClose = getPercentageY(c.close);
+            const yHigh = getPercentageY(c.high);
+            const yLow = getPercentageY(c.low);
 
-        {/* Dynamic status/metrics panel (Top-Right) */}
-        <div className="absolute right-1 top-1 sm:right-2 sm:top-2 z-10 rounded-2xl border-2 border-ink bg-white p-2.5 sm:p-3 shadow-[4px_4px_0_0_var(--ink)] w-[110px] sm:w-[135px] text-right" style={{ animationDelay: "0.5s" }}>
-          <span className="text-[8px] sm:text-[9px] uppercase tracking-widest text-ink/50 block font-bold font-mono">Est. Yield Lock</span>
-          <span className="text-xs sm:text-base font-black text-coral block mt-0.5 font-mono">22.4% APY</span>
-        </div>
+            const bodyTop = Math.min(yOpen, yClose);
+            const bodyBottom = Math.max(yOpen, yClose);
+            const bodyHeight = Math.max(2, bodyBottom - bodyTop);
 
-        {/* Connection flow lines inside SVG */}
-        <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 400 300" fill="none">
-          <defs>
-            <linearGradient id="flow-coral" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="var(--color-coral)" stopOpacity="0.8" />
-              <stop offset="100%" stopColor="var(--color-coral)" stopOpacity="0.2" />
-            </linearGradient>
-            <linearGradient id="flow-lime" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="var(--color-lime)" stopOpacity="0.8" />
-              <stop offset="100%" stopColor="var(--color-lime)" stopOpacity="0.2" />
-            </linearGradient>
-            <linearGradient id="flow-cobalt" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="var(--color-cobalt)" stopOpacity="0.8" />
-              <stop offset="100%" stopColor="var(--color-cobalt)" stopOpacity="0.2" />
-            </linearGradient>
-          </defs>
-          {/* Paths connecting nodes to center (200, 150) */}
-          <path d="M75 55 L200 150" stroke="url(#flow-coral)" strokeWidth="2" strokeDasharray="6 6" className="animate-flow-dash" />
-          <path d="M325 240 L200 150" stroke="url(#flow-lime)" strokeWidth="2" strokeDasharray="6 6" className="animate-flow-dash" />
-          <path d="M75 240 L200 150" stroke="url(#flow-cobalt)" strokeWidth="2" strokeDasharray="6 6" className="animate-flow-dash" />
+            return (
+              <g key={`candle-${i}`}>
+                {/* Wick */}
+                <line
+                  x1={centerX}
+                  y1={yHigh}
+                  x2={centerX}
+                  y2={yLow}
+                  stroke="var(--ink)"
+                  strokeWidth="2"
+                />
+                {/* Body */}
+                <rect
+                  x={x}
+                  y={bodyTop}
+                  width={candleWidth}
+                  height={bodyHeight}
+                  fill={isGreen ? "var(--color-lime)" : "var(--color-coral)"}
+                  stroke="var(--ink)"
+                  strokeWidth="2"
+                  rx="3"
+                />
+              </g>
+            );
+          })}
+
+          {/* Moving Average Line */}
+          <path
+            d={maPath}
+            fill="none"
+            stroke="var(--color-cobalt)"
+            strokeWidth="3"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
         </svg>
       </div>
 
       {/* Footer Metrics */}
       <div className="grid grid-cols-3 gap-2 border-t-2 border-ink/10 pt-4 text-center z-10 font-mono">
         <div>
-          <span className="text-[9px] text-ink/50 uppercase font-bold block">Daily Harvest</span>
-          <span className="text-xs font-bold text-ink mt-0.5 block">$3,812.44</span>
+          <span className="text-[9px] text-ink/50 uppercase font-bold block">Avg Vol (24h)</span>
+          <span className="text-xs font-bold text-ink mt-0.5 block">1,845 BTC</span>
         </div>
         <div>
-          <span className="text-[9px] text-ink/50 uppercase font-bold block">Total Placed</span>
-          <span className="text-xs font-bold text-coral mt-0.5 block">100% Safe</span>
+          <span className="text-[9px] text-ink/50 uppercase font-bold block">Terminal State</span>
+          <span className="text-xs font-bold text-coral mt-0.5 block">Insured</span>
         </div>
         <div>
-          <span className="text-[9px] text-ink/50 uppercase font-bold block">Smart Contracts</span>
-          <span className="text-xs font-bold text-cobalt mt-0.5 block">Verified</span>
+          <span className="text-[9px] text-ink/50 uppercase font-bold block">Volatility Index</span>
+          <span className="text-xs font-bold text-cobalt mt-0.5 block">Low Risk</span>
         </div>
       </div>
     </div>
