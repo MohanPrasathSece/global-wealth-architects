@@ -725,7 +725,7 @@ function ContactFooter() {
             disabled={loading}
             className="group mt-6 sm:mt-8 inline-flex h-12 sm:h-14 w-full sm:w-auto items-center justify-center gap-2 sm:gap-3 rounded-full bg-ink px-6 sm:px-8 text-sm sm:text-base font-bold text-cream transition hover:bg-ink/90 disabled:opacity-70 shadow-[3px_3px_0_0_var(--lime)] sm:shadow-[4px_4px_0_0_var(--lime)]"
           >
-            {loading ? "Sending..." : "Send it over"}
+            {loading ? "Sending..." : "Submit Enquiry"}
             <span className="flex size-7 sm:size-8 items-center justify-center rounded-full bg-lime text-ink transition-transform group-hover:rotate-45">→</span>
           </button>
           <p className="mt-4 text-xs text-muted-foreground">
