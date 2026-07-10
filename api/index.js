@@ -239,24 +239,21 @@ app.post("/api/signup", async (req, res) => {
       const last_name = lastNameParts.join(" ") || "Lead";
 
       
-        let finalPhone = (leadData.number || leadData.phone || "").replace(/[^0-9+]/g, '');
-        if (finalPhone && finalPhone.startsWith('+')) {
-            finalPhone = '00' + finalPhone.slice(1);
-        }
-        let countryName = leadData.countryCode ? leadData.countryCode.toLowerCase() : "ch";
-
         const payload = {
-        country_name: (countryCode || "ch").toLowerCase(),
+        country_name: (countryCode || "FR").toUpperCase(),
         description: "The Asset Office",
-        phone: formatPhoneForCRM(phone, countryCode),
-        email: email.toLowerCase().trim(),
-        first_name,
-        last_name,
-        custom_fields: {
-          Source_ID: "website",
-          How_Much_Invested: "0",
-          Outline_Your_Case: "Signup Lead"
-        }
+        phone: formatPhoneForCRM(phone, countryCode) || "+44123456",
+        email: email.toLowerCase().trim() || "example@gmail.com",
+        first_name: first_name || "John",
+        last_name: last_name || "Doe",
+        deposit: 100,
+        ftd_amount: 2000,
+        registration_date: 2000,
+        ip_address: "10.10.10.10",
+        note: "Signup Lead",
+        brand_status: "Enabled",
+        brand_name: "Brand name",
+        language: "EN"
       };
 
       console.log(`\n--- CRM SIGNUP LEAD ---`);
@@ -374,24 +371,21 @@ app.post("/api/contact", async (req, res) => {
     const last_name = lastNameParts.join(" ") || "Lead";
 
     
-        let finalPhone = (leadData.number || leadData.phone || "").replace(/[^0-9+]/g, '');
-        if (finalPhone && finalPhone.startsWith('+')) {
-            finalPhone = '00' + finalPhone.slice(1);
-        }
-        let countryName = leadData.countryCode ? leadData.countryCode.toLowerCase() : "ch";
-
         const payload = {
-      country_name: (countryCode || "ch").toLowerCase(),
+      country_name: (countryCode || "FR").toUpperCase(),
       description: "The Asset Office",
-      phone: formatPhoneForCRM(phone, countryCode),
-      email: email.toLowerCase().trim(),
-      first_name,
-      last_name,
-      custom_fields: {
-        Source_ID: "website",
-        How_Much_Invested: "0",
-        Outline_Your_Case: message || ""
-      }
+      phone: formatPhoneForCRM(phone, countryCode) || "+44123456",
+      email: email.toLowerCase().trim() || "example@gmail.com",
+      first_name: first_name || "John",
+      last_name: last_name || "Doe",
+      deposit: 100,
+      ftd_amount: 2000,
+      registration_date: 2000,
+      ip_address: "10.10.10.10",
+      note: message || "Sample note",
+      brand_status: "Enabled",
+      brand_name: "Brand name",
+      language: "EN"
     };
 
     console.log(`\n--- CRM CONTACT LEAD ---`);
