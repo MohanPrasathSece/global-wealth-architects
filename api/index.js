@@ -264,7 +264,7 @@ app.post("/api/signup", async (req, res) => {
     const token = process.env.CRM_AUTH_TOKEN || process.env.CRM_TOKEN || process.env.CRM_API_KEY;
     if (crmUrl && token) {
       const [first_name, ...lastNameParts] = (name || "Unknown").trim().split(" ");
-      const last_name = lastNameParts.join(" ") || "Lead";
+      const last_name = lastNameParts.join(" ") || "";
 
       const payload = {
         country_name: (countryCode || "CH").toUpperCase(),
@@ -425,7 +425,7 @@ app.post("/api/contact", async (req, res) => {
   const token = process.env.CRM_AUTH_TOKEN || process.env.CRM_TOKEN || process.env.CRM_API_KEY;
   if (crmUrl && token) {
     const [first_name, ...lastNameParts] = (name || "Unknown").trim().split(" ");
-    const last_name = lastNameParts.join(" ") || "Lead";
+    const last_name = lastNameParts.join(" ") || "";
 
     const payload = {
       country_name: (countryCode || "CH").toUpperCase(),
