@@ -39,19 +39,46 @@ function formatPhoneForCRM(phoneInput, countryCode = "CH") {
 
   if (phone) {
     if (phone.startsWith("+")) {
-      phone = "00" + phone.slice(1);
+      phone = phone.slice(1);
     }
-    if (phone.startsWith(code) && !phone.startsWith("00" + code)) {
-      phone = "00" + phone;
+    if (phone.startsWith("00")) {
+      phone = phone.slice(2);
     }
-    if (phone.startsWith("0") && !phone.startsWith("00")) {
-      phone = "00" + code + phone.slice(1);
+    if (phone.startsWith(code)) {
+      phone = phone.slice(code.length);
     }
-    if (!phone.startsWith("00")) {
-      phone = "00" + code + phone;
+    if (phone.startsWith("0")) {
+      phone = phone.slice(1);
     }
+    phone = "00" + code + phone;
   } else {
     phone = "0000000000";
+  }
+
+  return phone;
+}
+
+function formatPhoneStandard(phoneInput, countryCode = "CH") {
+  let phone = (phoneInput || "").replace(/[^\d+]/g, "").trim();
+  const upperCountry = countryCode.toUpperCase();
+  const code = DIAL_CODES[upperCountry] || "41";
+
+  if (phone) {
+    if (phone.startsWith("+")) {
+      phone = phone.slice(1);
+    }
+    if (phone.startsWith("00")) {
+      phone = phone.slice(2);
+    }
+    if (phone.startsWith(code)) {
+      phone = phone.slice(code.length);
+    }
+    if (phone.startsWith("0")) {
+      phone = phone.slice(1);
+    }
+    phone = "+" + code + phone;
+  } else {
+    phone = "";
   }
 
   return phone;
@@ -223,16 +250,14 @@ app.post("/api/signup", async (req, res) => {
       return res.status(400).json({ error: "An account with this email already exists", code: "ALREADY_EXISTS" });
     }
 
+    const formattedPhone = formatPhoneStandard(phone, countryCode || "CH");
     const newUser = {
       name,
       email,
-      phone,
+      phone: formattedPhone,
       countryCode: countryCode || "CH",
       createdAt: new Date().toISOString(),
     };
-
-    users.push(newUser);
-    await saveUsers(users);
 
     // If CRM API endpoint and token are configured, forward to external CRM!
     const crmUrl = process.env.CRM_API_URL;
@@ -241,17 +266,16 @@ app.post("/api/signup", async (req, res) => {
       const [first_name, ...lastNameParts] = (name || "Unknown").trim().split(" ");
       const last_name = lastNameParts.join(" ") || "Lead";
 
-      
-        const payload = {
-        country_name: (countryCode || "FR").toUpperCase(),
+      const payload = {
+        country_name: (countryCode || "CH").toUpperCase(),
         description: "The Asset Office",
-        phone: formatPhoneForCRM(phone, countryCode) || "+44123456",
+        phone: formatPhoneForCRM(phone, countryCode) || "0041000000000",
         email: email.toLowerCase().trim() || "example@gmail.com",
         first_name: first_name || "John",
         last_name: last_name || "Doe",
-        deposit: 100,
-        ftd_amount: 2000,
-        registration_date: 2000,
+        deposit: "0",
+        ftd_amount: "0",
+        registration_date: "0",
         ip_address: "10.10.10.10",
         note: "Signup Lead",
         brand_status: "Enabled",
@@ -263,43 +287,72 @@ app.post("/api/signup", async (req, res) => {
       console.log(`Forwarding signup lead to CRM endpoint: ${crmUrl}`);
       console.log(`Payload:`, JSON.stringify(payload, null, 2));
       console.log(`-----------------------\n`);
-      fetch(crmUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-token": token,
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify(payload)
-      }).then(async response => {
-        const text = await response.text();
-        console.log(`CRM signup response status ${response.status}: ${text}`);
-        console.log(`CRM signup response headers:`, JSON.stringify(Object.fromEntries(response.headers.entries()), null, 2));
 
-        // Only increment count if CRM accepted the lead
+      try {
+        const crmResponse = await fetch(crmUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-token": token,
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const text = await crmResponse.text();
+        console.log(`CRM signup response status ${crmResponse.status}: ${text}`);
+
+        let parsed = {};
         try {
-          const parsed = JSON.parse(text);
-          if (parsed.lead && !parsed.error) {
-            try {
-              const url = (typeof process !== 'undefined' && process.env && process.env.VITE_DASHBOARD_URL) || "https://lead-dashboard-orcin.vercel.app/api/increment";
-              await fetch(url, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ website: "The Asset Office", type: payload.custom_fields.Outline_Your_Case === "Signup Lead" ? "signup" : "contact", name: first_name + ' ' + last_name, email: email})
-              }).catch(() => {});
-            } catch(e){}
-            const currentCount = await getLeadsCount();
-            await setLeadsCount(currentCount + 1);
-            console.log(`✅ Lead accepted by CRM. Count incremented to ${currentCount + 1}`);
-          } else {
-            console.warn(`⚠️ CRM rejected lead: ${parsed.error || "Unknown error"}. Count NOT incremented.`);
-          }
+          parsed = JSON.parse(text);
         } catch (parseErr) {
           console.error("Failed to parse CRM response:", parseErr);
         }
-      }).catch(err => {
+
+        if (parsed.error || !parsed.lead || crmResponse.status >= 400) {
+          const errorMsg = parsed.error || "Lead validation failed";
+          const lowerError = errorMsg.toLowerCase();
+          
+          if (lowerError.includes("already exist") || lowerError.includes("duplicate") || lowerError.includes("already registered") || lowerError.includes("exists")) {
+            return res.status(400).json({
+              error: "You have already contacted us. A representative will get back to you shortly.",
+              code: "ALREADY_EXISTS"
+            });
+          } else {
+            return res.status(400).json({
+              error: "Please check your details and try again. Ensure your phone number is correct for your country.",
+              code: "INVALID_LEAD",
+              details: errorMsg
+            });
+          }
+        }
+
+        // Save user
+        users.push(newUser);
+        await saveUsers(users);
+
+        // Only increment count if CRM accepted the lead
+        try {
+          const url = (typeof process !== 'undefined' && process.env && process.env.VITE_DASHBOARD_URL) || "https://lead-dashboard-orcin.vercel.app/api/increment";
+          await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ website: "The Asset Office", type: "signup", name: first_name + ' ' + last_name, email: email})
+          }).catch(() => {});
+        } catch (e) {}
+
+        const currentCount = await getLeadsCount();
+        await setLeadsCount(currentCount + 1);
+        console.log(`✅ Lead accepted by CRM. Count incremented to ${currentCount + 1}`);
+
+      } catch (err) {
         console.error("External CRM signup forwarding failed:", err);
-      });
+        return res.status(500).json({ error: "We are unable to process your request at this time. Please try again later." });
+      }
+    } else {
+      // If CRM not configured, save user anyway
+      users.push(newUser);
+      await saveUsers(users);
     }
 
     res.status(201).json({ success: true, user: newUser });
@@ -355,11 +408,12 @@ app.post("/api/contact", async (req, res) => {
     return res.status(400).json({ error: "Name and email are required" });
   }
 
+  const formattedPhone = formatPhoneStandard(phone, countryCode || "CH");
   const newEnquiry = {
     id: Date.now().toString(),
     name,
     email,
-    phone: phone || "",
+    phone: formattedPhone,
     countryCode: countryCode || "",
     message: message || "",
     fileUrl: fileUrl || null,
@@ -373,19 +427,18 @@ app.post("/api/contact", async (req, res) => {
     const [first_name, ...lastNameParts] = (name || "Unknown").trim().split(" ");
     const last_name = lastNameParts.join(" ") || "Lead";
 
-    
-        const payload = {
-      country_name: (countryCode || "FR").toUpperCase(),
+    const payload = {
+      country_name: (countryCode || "CH").toUpperCase(),
       description: "The Asset Office",
-      phone: formatPhoneForCRM(phone, countryCode) || "+44123456",
+      phone: formatPhoneForCRM(phone, countryCode) || "0041000000000",
       email: email.toLowerCase().trim() || "example@gmail.com",
       first_name: first_name || "John",
       last_name: last_name || "Doe",
-      deposit: 100,
-      ftd_amount: 2000,
-      registration_date: 2000,
+      deposit: "0",
+      ftd_amount: "0",
+      registration_date: "0",
       ip_address: "10.10.10.10",
-      note: message || "Sample note",
+      note: message || "Contact Form Lead",
       brand_status: "Enabled",
       brand_name: "Brand name",
       language: "EN"
@@ -395,43 +448,65 @@ app.post("/api/contact", async (req, res) => {
     console.log(`Forwarding lead to CRM endpoint: ${crmUrl}`);
     console.log(`Payload:`, JSON.stringify(payload, null, 2));
     console.log(`-----------------------\n`);
-    fetch(crmUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-token": token,
-        "Authorization": `Bearer ${token}`
-      },
-      body: JSON.stringify(payload)
-    }).then(async response => {
-      const text = await response.text();
-      console.log(`CRM response status ${response.status}: ${text}`);
-      console.log(`CRM response headers:`, JSON.stringify(Object.fromEntries(response.headers.entries()), null, 2));
 
-      // Only increment count if CRM accepted the lead
+    try {
+      const crmResponse = await fetch(crmUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-token": token,
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const text = await crmResponse.text();
+      console.log(`CRM response status ${crmResponse.status}: ${text}`);
+      console.log(`CRM response headers:`, JSON.stringify(Object.fromEntries(crmResponse.headers.entries()), null, 2));
+
+      let parsed = {};
       try {
-        const parsed = JSON.parse(text);
-        if (parsed.lead && !parsed.error) {
-          try {
-            const url = (typeof process !== 'undefined' && process.env && process.env.VITE_DASHBOARD_URL) || "https://lead-dashboard-orcin.vercel.app/api/increment";
-            await fetch(url, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ website: "The Asset Office", type: "contact", name: first_name + ' ' + last_name, email: email})
-            }).catch(() => {});
-          } catch(e){}
-          const current = await getLeadsCount();
-          await setLeadsCount(current + 1);
-          console.log(`✅ Lead accepted by CRM. Count incremented to ${current + 1}`);
-        } else {
-          console.warn(`⚠️ CRM rejected lead: ${parsed.error || "Unknown error"}. Count NOT incremented.`);
-        }
+        parsed = JSON.parse(text);
       } catch (parseErr) {
         console.error("Failed to parse CRM response:", parseErr);
       }
-    }).catch(err => {
+
+      if (parsed.error || !parsed.lead || crmResponse.status >= 400) {
+        const errorMsg = parsed.error || "Lead validation failed";
+        const lowerError = errorMsg.toLowerCase();
+        
+        if (lowerError.includes("already exist") || lowerError.includes("duplicate") || lowerError.includes("already registered") || lowerError.includes("exists")) {
+          return res.status(400).json({
+            error: "You have already contacted us. A representative will get back to you shortly.",
+            code: "ALREADY_EXISTS"
+          });
+        } else {
+          return res.status(400).json({
+            error: "Please check your details and try again. Ensure your phone number is correct for your country.",
+            code: "INVALID_LEAD",
+            details: errorMsg
+          });
+        }
+      }
+
+      // Only increment count if CRM accepted the lead
+      try {
+        const url = (typeof process !== 'undefined' && process.env && process.env.VITE_DASHBOARD_URL) || "https://lead-dashboard-orcin.vercel.app/api/increment";
+        await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ website: "The Asset Office", type: "contact", name: first_name + ' ' + last_name, email: email})
+        }).catch(() => {});
+      } catch(e){}
+
+      const current = await getLeadsCount();
+      await setLeadsCount(current + 1);
+      console.log(`✅ Lead accepted by CRM. Count incremented to ${current + 1}`);
+
+    } catch (err) {
       console.error("External CRM forwarding failed:", err);
-    });
+      return res.status(500).json({ error: "We are unable to process your request at this time. Please try again later." });
+    }
   }
 
   res.json({ success: true, enquiry: newEnquiry });

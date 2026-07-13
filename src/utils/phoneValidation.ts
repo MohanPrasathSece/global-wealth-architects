@@ -19,42 +19,6 @@ export const COUNTRIES: Country[] = [
     errorMsg: "Swiss number must be 9 digits (excluding leading zero)."
   },
   {
-    code: "US",
-    name: "United States",
-    flag: "🇺🇸",
-    dialCode: "+1",
-    placeholder: "201 555 0123",
-    regex: /^[2-9]\d{9}$/,
-    errorMsg: "US number must be 10 digits."
-  },
-  {
-    code: "GB",
-    name: "United Kingdom",
-    flag: "🇬🇧",
-    dialCode: "+44",
-    placeholder: "7700 900077",
-    regex: /^7\d{9}$/,
-    errorMsg: "UK mobile number must be 10 digits starting with 7."
-  },
-  {
-    code: "DE",
-    name: "Germany",
-    flag: "🇩🇪",
-    dialCode: "+49",
-    placeholder: "170 1234567",
-    regex: /^[1-9]\d{9,11}$/,
-    errorMsg: "German mobile number must be 10 to 12 digits."
-  },
-  {
-    code: "IN",
-    name: "India",
-    flag: "🇮🇳",
-    dialCode: "+91",
-    placeholder: "98765 43210",
-    regex: /^[6-9]\d{9}$/,
-    errorMsg: "Indian number must be 10 digits starting with 6-9."
-  },
-  {
     code: "FR",
     name: "France",
     flag: "🇫🇷",
@@ -73,13 +37,40 @@ export const COUNTRIES: Country[] = [
     errorMsg: "Belgium mobile number must be 9 digits (excluding leading zero)."
   },
   {
-    code: "IT",
-    name: "Italy",
-    flag: "🇮🇹",
-    dialCode: "+39",
-    placeholder: "312 345 6789",
-    regex: /^3[1-9]\d{8}$/,
-    errorMsg: "Italian mobile number must be 10 digits starting with 3."
+    code: "CA",
+    name: "Canada",
+    flag: "🇨🇦",
+    dialCode: "+1",
+    placeholder: "613 555 0123",
+    regex: /^[2-9]\d{9}$/,
+    errorMsg: "Canadian number must be 10 digits."
+  },
+  {
+    code: "US",
+    name: "USA",
+    flag: "🇺🇸",
+    dialCode: "+1",
+    placeholder: "201 555 0123",
+    regex: /^[2-9]\d{9}$/,
+    errorMsg: "US number must be 10 digits."
+  },
+  {
+    code: "GB",
+    name: "UK",
+    flag: "🇬🇧",
+    dialCode: "+44",
+    placeholder: "7700 900077",
+    regex: /^7\d{9}$/,
+    errorMsg: "UK mobile number must be 10 digits starting with 7."
+  },
+  {
+    code: "DE",
+    name: "Germany",
+    flag: "🇩🇪",
+    dialCode: "+49",
+    placeholder: "170 1234567",
+    regex: /^[1-9]\d{9,11}$/,
+    errorMsg: "German mobile number must be 10 to 12 digits."
   },
   {
     code: "ES",
@@ -91,6 +82,15 @@ export const COUNTRIES: Country[] = [
     errorMsg: "Spanish mobile number must be 9 digits starting with 6 or 7."
   },
   {
+    code: "IT",
+    name: "Italy",
+    flag: "🇮🇹",
+    dialCode: "+39",
+    placeholder: "312 345 6789",
+    regex: /^3[1-9]\d{8,9}$/,
+    errorMsg: "Italian mobile number must be 9 or 10 digits starting with 3."
+  },
+  {
     code: "NL",
     name: "Netherlands",
     flag: "🇳🇱",
@@ -100,15 +100,6 @@ export const COUNTRIES: Country[] = [
     errorMsg: "Dutch mobile number must be 9 digits starting with 6."
   },
   {
-    code: "AT",
-    name: "Austria",
-    flag: "🇦🇹",
-    dialCode: "+43",
-    placeholder: "664 1234567",
-    regex: /^6[1-9]\d{8,9}$/,
-    errorMsg: "Austrian mobile number must be 9 or 10 digits starting with 6."
-  },
-  {
     code: "SE",
     name: "Sweden",
     flag: "🇸🇪",
@@ -116,6 +107,87 @@ export const COUNTRIES: Country[] = [
     placeholder: "70 123 45 67",
     regex: /^7[02369]\d{7}$/,
     errorMsg: "Swedish mobile number must be 9 digits starting with 7."
+  },
+  {
+    code: "AU",
+    name: "Australia",
+    flag: "🇦🇺",
+    dialCode: "+61",
+    placeholder: "412 345 678",
+    regex: /^4\d{8}$/,
+    errorMsg: "Australian mobile number must be 9 digits starting with 4."
+  },
+  {
+    code: "IN",
+    name: "India",
+    flag: "🇮🇳",
+    dialCode: "+91",
+    placeholder: "98765 43210",
+    regex: /^[6-9]\d{9}$/,
+    errorMsg: "Indian number must be 10 digits starting with 6-9."
+  },
+  {
+    code: "AE",
+    name: "UAE",
+    flag: "🇦🇪",
+    dialCode: "+971",
+    placeholder: "50 123 4567",
+    regex: /^5[02568]\d{7}$/,
+    errorMsg: "UAE mobile number must be 9 digits starting with 5."
+  },
+  {
+    code: "SG",
+    name: "Singapore",
+    flag: "🇸🇬",
+    dialCode: "+65",
+    placeholder: "8123 4567",
+    regex: /^[89]\d{7}$/,
+    errorMsg: "Singapore mobile number must be 8 digits starting with 8 or 9."
+  },
+  {
+    code: "ZA",
+    name: "South Africa",
+    flag: "🇿🇦",
+    dialCode: "+27",
+    placeholder: "82 123 4567",
+    regex: /^[6-8]\d{8}$/,
+    errorMsg: "South African mobile number must be 9 digits starting with 6, 7 or 8."
+  },
+  {
+    code: "BR",
+    name: "Brazil",
+    flag: "🇧🇷",
+    dialCode: "+55",
+    placeholder: "99123 4567",
+    regex: /^9\d{10}$/,
+    errorMsg: "Brazilian mobile number must be 11 digits starting with 9 (including area code)."
+  },
+  {
+    code: "MX",
+    name: "Mexico",
+    flag: "🇲🇽",
+    dialCode: "+52",
+    placeholder: "55 1234 5678",
+    regex: /^[1-9]\d{9}$/,
+    errorMsg: "Mexican number must be 10 digits."
+  },
+  {
+    code: "JP",
+    name: "Japan",
+    flag: "🇯🇵",
+    dialCode: "+81",
+    placeholder: "90 1234 5678",
+    regex: /^[789]0\d{8}$/,
+    errorMsg: "Japanese mobile number must be 10 digits starting with 70, 80 or 90."
+  },
+  {
+    code: "CY",
+    name: "Cyprus",
+    flag: "🇨🇾",
+    dialCode: "+357",
+    placeholder: "99 123456",
+    regex: /^9[5679]\d{6}$/,
+    errorMsg: "Cyprus mobile number must be 8 digits starting with 9."
   },
   {
     code: "GEN",

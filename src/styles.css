@@ -142,3 +142,25 @@
 .animate-wobble {
   animation: wobble 8s ease-in-out infinite;
 }
+
+/* Global select element styling */
+select {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='oklch(0.18 0.02 60)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1em;
+  padding-right: 2.5rem;
+  background-color: var(--cream);
+  border: 2px solid var(--ink);
+  border-radius: var(--radius-xl);
+  color: var(--ink);
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+select:focus {
+  border-color: var(--coral) !important;
+  background-color: var(--cream);
+}
+

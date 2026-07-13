@@ -340,9 +340,9 @@ export const AuthModals: React.FC<AuthModalsProps> = ({
                 {/* Already-exists banner */}
                 {alreadyExists && (
                   <div className="rounded-2xl border-2 border-ink bg-blush p-4 text-sm leading-relaxed text-ink">
-                    <p className="font-bold text-coral mb-0.5">⚠️ Account already exists</p>
-                    <p className="text-ink/80 break-all mb-2">
-                      <span className="font-mono text-ink/90 font-bold">{email}</span> is already registered.
+                    <p className="font-bold text-coral mb-0.5">⚠️ Already registered</p>
+                    <p className="text-ink/80 mb-2">
+                      You have already contacted us. A representative will get back to you shortly.
                     </p>
                     <button
                       type="button"
