@@ -22,10 +22,10 @@ const UPLOAD_DIR = path.join("/tmp", "uploads");
 
 // Phone formatting for CRM (must be in 00XX format, not +XX)
 const DIAL_CODES = {
-  CH: "41", US: "1", GB: "44", DE: "49", IN: "91", FR: "33",
-  BE: "32", IT: "39", ES: "34", NL: "31", AT: "43", SE: "46",
+  IE: '353', CH: '41', FR: '33', BE: '32', CA: '1', US: '1',
+  GB: '44', DE: '49', ES: '34', IT: '39', NL: '31', AT: "43", SE: "46",
   AU: "61", CA: "1", JP: "81", SG: "65", AE: "971", HK: "852",
-  BR: "55", MX: "52", ZA: "27", NZ: "64", IE: "353", PT: "351",
+  BR: "55", MX: "52", ZA: "27", NZ: "64", PT: "351",
   NO: "47", DK: "45", FI: "358", PL: "48", CZ: "420", RO: "40",
   HU: "36", GR: "30", TR: "90", IL: "972", SA: "966", KR: "82",
   TW: "886", TH: "66", MY: "60", PH: "63", ID: "62", VN: "84",
