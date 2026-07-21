@@ -592,7 +592,7 @@ function ContactFooter() {
         setLoading(false);
         setStatus({
           type: "success",
-          msg: "Thank you! Your enquiry has been received successfully.",
+          msg: "Thank you for reaching out. Your enquiry has been successfully received. Our team will contact you shortly.",
         });
         setForm({
           name: "",
